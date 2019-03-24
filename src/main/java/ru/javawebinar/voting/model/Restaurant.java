@@ -8,14 +8,14 @@ import java.util.List;
         @NamedQuery(name = Restaurant.ALL_SORTED, query = "SELECT r FROM Restaurant r ORDER BY r.name")
         })
 @Entity
-@Table(name = "restaurants")
+@Table(name = "restaurants", uniqueConstraints = {@UniqueConstraint(columnNames = "name", name = "restaurants_unique_name_idx")})
 public class Restaurant extends AbstractNamedEntity {
 
     public static final String DELETE = "Restaurant.delete";
     public static final String ALL_SORTED = "Restaurant.getAllSorted";
 
-    // Подумать, нужно ли это
-    @OneToMany(mappedBy = "restaurant")
+    // Подумать про LAZY и нужно ли это "private List<Dish> dishes" ресторану
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
     @OrderBy("date DESC, name, id")
     private List<Dish> dishes;
 

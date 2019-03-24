@@ -19,7 +19,7 @@ CREATE TABLE users
   enabled          BOOLEAN DEFAULT TRUE    NOT NULL
 );
 CREATE UNIQUE INDEX users_unique_email_idx
-  ON USERS (email);
+  ON users (email);
 
 CREATE TABLE user_roles
 (
