@@ -8,28 +8,32 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @NamedQueries({
-        // Подумать нужна ли здесь сортировка, и если да, то какая
         @NamedQuery(name = Vote.ALL_SORTED, query = "SELECT v FROM Vote v WHERE v.date=:date ORDER BY v.restaurant.name, v.id")
+        /*@NamedQuery(name = Vote.RESULT, query = "SELECT v.date, v.restaurant.id, v.restaurant.name, COUNT(*)" +
+                " FROM Vote v" +
+                " WHERE v.date=:date" +
+                " GROUP BY v.date, v.restaurant.id, v.restaurant.name" +
+                " ORDER BY v.restaurant.name")*/
 })
 @Entity
 @Table(name = "votes", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date"}, name = "votes_unique_user_date_idx")})
 public class Vote extends AbstractBaseEntity {
 
     public static final String ALL_SORTED = "Vote.getAllSorted";
+    //public static final String RESULT = "Vote.getResult";
 
     @Column(name = "date", nullable = false, columnDefinition = "DATE default now()")
     @NotNull
     private LocalDate date;
 
-    // Подумать про LAZY
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @NotNull
     private User user;
 
-    // Подумать про LAZY
-    @ManyToOne(fetch = FetchType.LAZY)
+    // Поставила EAGER для результатов голосования
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "restaurant_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @NotNull
@@ -46,6 +50,12 @@ public class Vote extends AbstractBaseEntity {
     public Vote(Integer id, LocalDate date) {
         super(id);
         this.date = date;
+    }
+
+    public Vote(Integer id, LocalDate date, Restaurant restaurant) {
+        super(id);
+        this.date = date;
+        this.restaurant = restaurant;
     }
 
     public Vote(Integer id, LocalDate date, User user, Restaurant restaurant) {

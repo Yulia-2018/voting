@@ -18,6 +18,7 @@ public class VoteRepositoryImpl implements VoteRepository {
     @PersistenceContext
     private EntityManager em;
 
+    // Возможно, что в save нужно еще передавать параметр "int restaurantId"
     @Override
     @Transactional
     public Vote save(Vote vote, int userId) {
@@ -31,8 +32,6 @@ public class VoteRepositoryImpl implements VoteRepository {
         }
     }
 
-    // Подумать, может ли пользователь просматривать не свое голосование,
-    // то есть нужен ли параметр int userId в методах get и getAll
     @Override
     public Vote get(int id, int userId) {
         final Vote vote = em.find(Vote.class, id);

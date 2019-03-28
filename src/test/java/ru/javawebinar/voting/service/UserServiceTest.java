@@ -80,6 +80,17 @@ public class UserServiceTest {
         assertMatch(user, USER);
     }
 
+    @Test(expected = NotFoundException.class)
+    public void getByEmailNotFound() {
+        service.getByEmail("NewUser@yandex.ru");
+    }
+
+    @Test
+    public void getByEmailWithMultipleRoles() throws Exception {
+        User user = service.getByEmail("admin@gmail.com");
+        assertMatch(user, ADMIN);
+    }
+
     @Test
     public void getAll() {
         List<User> all = service.getAll();

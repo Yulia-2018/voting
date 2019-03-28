@@ -5,14 +5,16 @@ import ru.javawebinar.voting.model.Restaurant;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static ru.javawebinar.voting.DishTestData.DISHES1;
+import static ru.javawebinar.voting.DishTestData.DISHES2;
 import static ru.javawebinar.voting.model.AbstractBaseEntity.START_SEQ;
 
 public class RestaurantTestData {
     public static final int RESTAURANT1_ID = START_SEQ + 2;
     public static final int RESTAURANT2_ID = START_SEQ + 3;
 
-    public static final Restaurant RESTAURANT1 = new Restaurant(RESTAURANT1_ID, "Элис");
-    public static final Restaurant RESTAURANT2 = new Restaurant(RESTAURANT2_ID, "Местечко");
+    public static final Restaurant RESTAURANT1 = new Restaurant(RESTAURANT1_ID, "Элис", DISHES1);
+    public static final Restaurant RESTAURANT2 = new Restaurant(RESTAURANT2_ID, "Местечко", DISHES2);
 
     public static void assertMatch(Restaurant actual, Restaurant expected) {
         //assertThat(actual).isEqualToComparingFieldByField(expected);

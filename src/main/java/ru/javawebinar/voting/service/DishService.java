@@ -4,6 +4,7 @@ import ru.javawebinar.voting.model.Dish;
 import ru.javawebinar.voting.util.exception.NoAccessException;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface DishService {
@@ -16,5 +17,5 @@ public interface DishService {
 
     Dish get(int id, int restaurantId) throws NotFoundException;
 
-    List<Dish> getAll(int restaurantId);
+    List<Dish> getAll(int restaurantId, LocalDate date);
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import ru.javawebinar.voting.model.Dish;
 import ru.javawebinar.voting.service.DishService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static ru.javawebinar.voting.util.ValidationUtil.assureIdConsistent;
@@ -30,17 +31,17 @@ public class DishRestController {
         return service.create(dish, restaurantId, userId);
     }
 
-    public void delete(int id, int restaurantId) {
-        int userId = SecurityUtil.authUserId();
-        log.info("user {} delete dish {} for restaurant {}", userId, id, restaurantId);
-        service.delete(id, restaurantId, userId);
-    }
-
     public void update(Dish dish, int id, int restaurantId) {
         int userId = SecurityUtil.authUserId();
         assureIdConsistent(dish, id);
         log.info("user {} update {} for restaurant {}", userId, dish, restaurantId);
         service.update(dish, restaurantId, userId);
+    }
+
+    public void delete(int id, int restaurantId) {
+        int userId = SecurityUtil.authUserId();
+        log.info("user {} delete dish {} for restaurant {}", userId, id, restaurantId);
+        service.delete(id, restaurantId, userId);
     }
 
     public Dish get(int id, int restaurantId) {
@@ -49,9 +50,9 @@ public class DishRestController {
         return service.get(id, restaurantId);
     }
 
-    public List<Dish> getAll(int restaurantId) {
+    public List<Dish> getAll(int restaurantId, LocalDate date) {
         int userId = SecurityUtil.authUserId();
-        log.info("user {} getAll dish for restaurant {}", userId, restaurantId);
-        return service.getAll(restaurantId);
+        log.info("user {} getAll dish for restaurant {} for {}", userId, restaurantId, date);
+        return service.getAll(restaurantId, date);
     }
 }

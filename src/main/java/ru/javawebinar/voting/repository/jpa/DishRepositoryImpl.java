@@ -8,6 +8,7 @@ import ru.javawebinar.voting.repository.DishRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -21,7 +22,6 @@ public class DishRepositoryImpl implements DishRepository {
     @Transactional
     public Dish save(Dish dish, int restaurantId, int userId) {
         // Сделать проверку, что это может делать только админ
-        // Подумать, что будет если мы сохраняем или изменяем еду для не существующего ресторана
         Restaurant ref = em.getReference(Restaurant.class, restaurantId);
         dish.setRestaurant(ref);
         if (dish.isNew()) {
@@ -42,20 +42,17 @@ public class DishRepositoryImpl implements DishRepository {
                 .executeUpdate() != 0;
     }
 
-    // Подумать, нужен ли здесь restaurantId, может быть получать блюдо просто по его номеру
     @Override
     public Dish get(int id, int restaurantId) {
         final Dish dish = em.find(Dish.class, id);
         return dish != null && dish.getRestaurant().getId() == restaurantId ? dish : null;
     }
 
-    // Подумать, какие еще нужны выборки по еде, например,
-    // вся еда для определенного ресторана за указанное число
-
     @Override
-    public List<Dish> getAll(int restaurantId) {
+    public List<Dish> getAll(int restaurantId, LocalDate date) {
         return em.createNamedQuery(Dish.ALL_SORTED, Dish.class)
                 .setParameter("restaurantId", restaurantId)
+                .setParameter("date", date)
                 .getResultList();
     }
 }

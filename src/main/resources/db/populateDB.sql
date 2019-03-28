@@ -12,7 +12,8 @@ INSERT INTO users (name, email, password) VALUES
 
 INSERT INTO user_roles (role, user_id) VALUES
   ('ROLE_USER', 100000),
-  ('ROLE_ADMIN', 100001);
+  ('ROLE_ADMIN', 100001),
+  ('ROLE_USER', 100001);
 
 INSERT INTO restaurants (name) VALUES
   ('Элис'), -- 100002
@@ -32,4 +33,5 @@ INSERT INTO votes (date, user_id, restaurant_id) VALUES
   ('2019-01-01', 100000, 100002),
   ('2019-01-01', 100001, 100002),
   ('2019-02-01', 100000, 100002),
-  ('2019-02-01', 100001, 100003);
+  ('2019-02-01', 100001, 100003),
+  (sysdate, 100000, 100003);

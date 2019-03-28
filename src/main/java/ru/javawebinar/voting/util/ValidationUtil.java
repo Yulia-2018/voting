@@ -2,7 +2,11 @@ package ru.javawebinar.voting.util;
 
 
 import ru.javawebinar.voting.model.AbstractBaseEntity;
+import ru.javawebinar.voting.util.exception.InvalidDateTimeException;
 import ru.javawebinar.voting.util.exception.NotFoundException;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class ValidationUtil {
 
@@ -40,6 +44,12 @@ public class ValidationUtil {
             entity.setId(id);
         } else if (entity.getId() != id) {
             throw new IllegalArgumentException(entity + " must be with id=" + id);
+        }
+    }
+
+    public static void checkInvalidDateTime(LocalDate date, LocalTime time) {
+        if (date.compareTo(LocalDate.now()) != 0 | time.compareTo(LocalTime.of(11, 0)) > 0) {
+            throw new InvalidDateTimeException("date " + date + " or time " + time + " is invalid");
         }
     }
 }

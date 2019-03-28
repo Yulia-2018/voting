@@ -21,6 +21,9 @@ public class VoteTestData {
     public static final Vote VOTE2_USER = new Vote(VOTE1_ID + 2, LocalDate.of(2019, 2, 1), USER, RESTAURANT1);
     public static final Vote VOTE2_ADMIN = new Vote(VOTE1_ID + 3, LocalDate.of(2019, 2, 1), ADMIN, RESTAURANT2);
 
+    public static final int VOTE_ID_FOR_CURRENT_DATE = VOTE1_ID + 4;
+    public static final Vote VOTE_FOR_CURRENT_DATE = new Vote(VOTE_ID_FOR_CURRENT_DATE, LocalDate.now(), USER, RESTAURANT2);
+
     public static void assertMatch(Vote actual, Vote expected) {
         assertThat(actual).isEqualToIgnoringGivenFields(expected, "user", "restaurant");
     }

@@ -8,6 +8,7 @@ import ru.javawebinar.voting.repository.DishRepository;
 import ru.javawebinar.voting.util.exception.NoAccessException;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static ru.javawebinar.voting.util.ValidationUtil.checkNotFoundWithId;
@@ -45,7 +46,7 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public List<Dish> getAll(int restaurantId) {
-        return repository.getAll(restaurantId);
+    public List<Dish> getAll(int restaurantId, LocalDate date) {
+        return repository.getAll(restaurantId, date);
     }
 }

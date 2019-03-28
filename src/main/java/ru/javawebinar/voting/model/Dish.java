@@ -10,8 +10,7 @@ import java.time.LocalDate;
 
 @NamedQueries({
         @NamedQuery(name = Dish.DELETE, query = "DELETE FROM Dish m WHERE m.id=:id AND m.restaurant.id=:restaurantId"),
-        // Подумать, нужна ли здесь сортировка, и если да, то какая
-        @NamedQuery(name = Dish.ALL_SORTED, query = "SELECT m FROM Dish m WHERE m.restaurant.id=:restaurantId ORDER BY m.date DESC, m.name")
+        @NamedQuery(name = Dish.ALL_SORTED, query = "SELECT m FROM Dish m WHERE m.restaurant.id=:restaurantId AND m.date=:date ORDER BY m.name")
 })
 @Entity
 @Table(name = "dishes", uniqueConstraints = {@UniqueConstraint(columnNames = {"restaurant_id", "date", "name"}, name = "dishes_unique_restaurant_date_name_idx")})
@@ -28,7 +27,6 @@ public class Dish extends AbstractNamedEntity {
     @NotNull
     private LocalDate date;
 
-    // Подумать про LAZY
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -39,7 +37,7 @@ public class Dish extends AbstractNamedEntity {
     }
 
     public Dish(Dish m) {
-        this(m.id, m.name, m.price, m.date);
+        this(m.id, m.name, m.price, m.date, m.restaurant);
     }
 
     public Dish(Integer id, String name, Integer price, LocalDate date) {

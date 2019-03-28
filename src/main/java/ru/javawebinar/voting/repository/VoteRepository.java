@@ -9,7 +9,7 @@ public interface VoteRepository {
     // null if updated vote do not belong to userId
     Vote save(Vote vote, int userId);
 
-    // null if vote do not belong to userId
+    // null if not found or if vote do not belong to userId
     Vote get(int id, int userId);
 
     List<Vote> getAll(LocalDate date);

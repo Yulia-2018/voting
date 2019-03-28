@@ -2,6 +2,7 @@ package ru.javawebinar.voting.repository;
 
 import ru.javawebinar.voting.model.Dish;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface DishRepository {
@@ -14,5 +15,5 @@ public interface DishRepository {
     // null if dish do not belong to restaurantId
     Dish get(int id, int restaurantId);
 
-    List<Dish> getAll(int restaurantId);
+    List<Dish> getAll(int restaurantId, LocalDate date);
 }

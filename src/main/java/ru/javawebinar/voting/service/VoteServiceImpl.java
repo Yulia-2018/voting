@@ -5,12 +5,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import ru.javawebinar.voting.model.Vote;
 import ru.javawebinar.voting.repository.VoteRepository;
+import ru.javawebinar.voting.util.exception.InvalidDateTimeException;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import static ru.javawebinar.voting.util.ValidationUtil.checkInvalidDateTime;
 import static ru.javawebinar.voting.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
@@ -24,20 +26,17 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
-    public Vote create(Vote vote, LocalTime localTime, int userId) {
+    public Vote create(Vote vote, LocalTime time, int userId) throws InvalidDateTimeException {
         Assert.notNull(vote, "vote must not be null");
-        if (localTime.compareTo(LocalTime.of(11, 0)) < 0) {
-            return repository.save(vote, userId);
-        }
-        return null;
+        checkInvalidDateTime(vote.getDate(), time);
+        return repository.save(vote, userId);
     }
 
     @Override
-    public void update(Vote vote, LocalTime localTime, int userId) throws NotFoundException {
+    public void update(Vote vote, LocalTime time, int userId) throws NotFoundException, InvalidDateTimeException {
         Assert.notNull(vote, "vote must not be null");
-        if (localTime.compareTo(LocalTime.of(11, 0)) < 0) {
-            checkNotFoundWithId(repository.save(vote, userId), vote.getId());
-        }
+        checkInvalidDateTime(vote.getDate(), time);
+        checkNotFoundWithId(repository.save(vote, userId), vote.getId());
     }
 
     @Override

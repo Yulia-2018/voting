@@ -8,7 +8,7 @@ public interface RestaurantRepository {
     // null if the user is not an administrator
     Restaurant save(Restaurant restaurant, int userId);
 
-    // false if the user is not an administrator
+    // false if not found or if the user is not an administrator
     boolean delete(int id, int userId);
 
     // null if not found

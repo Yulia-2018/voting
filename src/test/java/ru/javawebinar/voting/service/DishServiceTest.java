@@ -30,11 +30,12 @@ public class DishServiceTest {
 
     @Test
     public void create() {
-        Dish newDish = new Dish(null, "Новая еда", 350, LocalDate.of(2019, 3, 15));
+        LocalDate date = LocalDate.of(2019, 2, 1);
+        Dish newDish = new Dish(null, "Новая еда", 350, date);
         Dish created = service.create(newDish, RESTAURANT1_ID, ADMIN_ID);
         newDish.setId(created.getId());
         assertMatch(newDish, created);
-        assertMatch(service.getAll(RESTAURANT1_ID), newDish, DISH1_3, DISH1_4, DISH1_1, DISH1_2);
+        assertMatch(service.getAll(RESTAURANT1_ID, date), DISH1_3, newDish, DISH1_4);
     }
 
     // Реализовать такую функциональность
@@ -70,7 +71,7 @@ public class DishServiceTest {
     @Test
     public void delete() {
         service.delete(DISH1_ID, RESTAURANT1_ID, ADMIN_ID);
-        assertMatch(service.getAll(RESTAURANT1_ID), DISH1_3, DISH1_4, DISH1_2);
+        assertMatch(service.getAll(RESTAURANT1_ID, DISH1_1.getDate()), DISH1_2);
     }
 
     // Реализовать такую функциональность
@@ -97,6 +98,6 @@ public class DishServiceTest {
 
     @Test
     public void getAll() {
-        assertMatch(service.getAll(RESTAURANT1_ID), DISHES1);
+        assertMatch(service.getAll(RESTAURANT1_ID, LocalDate.of(2019, 1, 1)), DISH1_1, DISH1_2);
     }
 }
