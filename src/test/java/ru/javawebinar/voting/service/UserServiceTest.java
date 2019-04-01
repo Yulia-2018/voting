@@ -47,7 +47,7 @@ public class UserServiceTest {
     public void update() {
         User updated = new User(USER);
         updated.setName("UpdatedName");
-        updated.setEmail("UpdatedEmail@yandex.ru");
+        updated.setRoles(Collections.singletonList(Role.ROLE_ADMIN));
         service.update(updated);
         assertMatch(service.get(USER_ID), updated);
     }
@@ -65,8 +65,8 @@ public class UserServiceTest {
 
     @Test
     public void get() {
-        User user = service.get(USER_ID);
-        assertMatch(user, USER);
+        User user = service.get(ADMIN_ID);
+        assertMatch(user, ADMIN);
     }
 
     @Test(expected = NotFoundException.class)
@@ -76,19 +76,13 @@ public class UserServiceTest {
 
     @Test
     public void getByEmail() {
-        User user = service.getByEmail("user@yandex.ru");
-        assertMatch(user, USER);
+        User user = service.getByEmail("admin@gmail.com");
+        assertMatch(user, ADMIN);
     }
 
     @Test(expected = NotFoundException.class)
     public void getByEmailNotFound() {
         service.getByEmail("NewUser@yandex.ru");
-    }
-
-    @Test
-    public void getByEmailWithMultipleRoles() throws Exception {
-        User user = service.getByEmail("admin@gmail.com");
-        assertMatch(user, ADMIN);
     }
 
     @Test
