@@ -1,57 +1,54 @@
 package ru.javawebinar.voting.web;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.voting.model.Restaurant;
-import ru.javawebinar.voting.service.RestaurantService;
 
+import java.net.URI;
 import java.util.List;
 
-import static ru.javawebinar.voting.util.ValidationUtil.assureIdConsistent;
-import static ru.javawebinar.voting.util.ValidationUtil.checkNew;
+@RestController
+@RequestMapping(value = RestaurantRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+public class RestaurantRestController extends AbstractRestaurantController {
+    static final String REST_URL = "/rest/restaurants";
 
-@Controller
-public class RestaurantRestController {
-    private static final Logger log = LoggerFactory.getLogger(RestaurantRestController.class);
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Restaurant> createWithLocation(@RequestBody Restaurant restaurant) {
+        Restaurant created = super.create(restaurant);
 
-    @Autowired
-    private final RestaurantService service;
+        URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path(REST_URL + "/{id}")
+                .buildAndExpand(created.getId()).toUri();
 
-    public RestaurantRestController(RestaurantService service) {
-        this.service = service;
+        return ResponseEntity.created(uriOfNewResource).body(created);
     }
 
-    public Restaurant create(Restaurant restaurant) {
-        int userId = SecurityUtil.authUserId();
-        checkNew(restaurant);
-        log.info("user {} create {}", userId, restaurant);
-        return service.create(restaurant, userId);
+    @Override
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void update(@RequestBody Restaurant restaurant, @PathVariable int id) {
+        super.update(restaurant, id);
     }
 
-    public void update(Restaurant restaurant, int id) {
-        int userId = SecurityUtil.authUserId();
-        assureIdConsistent(restaurant, id);
-        log.info("user {} update {}", userId, restaurant);
-        service.update(restaurant, userId);
+    @Override
+    @DeleteMapping("/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable int id) {
+        super.delete(id);
     }
 
-    public void delete(int id) {
-        int userId = SecurityUtil.authUserId();
-        log.info("user {} delete restaurant {}", userId, id);
-        service.delete(id, userId);
+    @Override
+    @GetMapping("/{id}")
+    public Restaurant get(@PathVariable int id) {
+        return super.get(id);
     }
 
-    public Restaurant get(int id) {
-        int userId = SecurityUtil.authUserId();
-        log.info("user {} get restaurant {}", userId, id);
-        return service.get(id);
-    }
-
+    @Override
+    @GetMapping
     public List<Restaurant> getAll() {
-        int userId = SecurityUtil.authUserId();
-        log.info("user {} getAll restaurant", userId);
-        return service.getAll();
+        return super.getAll();
     }
 }

@@ -1,58 +1,56 @@
 package ru.javawebinar.voting.web;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.voting.model.Dish;
-import ru.javawebinar.voting.service.DishService;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
-import static ru.javawebinar.voting.util.ValidationUtil.assureIdConsistent;
-import static ru.javawebinar.voting.util.ValidationUtil.checkNew;
+@RestController
+@RequestMapping(value = DishRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+public class DishRestController extends AbstractDishController {
+    static final String REST_URL = "/rest/dishes";
 
-@Controller
-public class DishRestController {
-    private static final Logger log = LoggerFactory.getLogger(DishRestController.class);
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Dish> createWithLocation(@RequestBody Dish dish, @RequestParam int restaurantId) {
+        Dish created = super.create(dish, restaurantId);
 
-    @Autowired
-    private final DishService service;
+        URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path(REST_URL + "/{id}")
+                .buildAndExpand(created.getId()).toUri();
 
-    public DishRestController(DishService service) {
-        this.service = service;
+        return ResponseEntity.created(uriOfNewResource).body(created);
     }
 
-    public Dish create(Dish dish, int restaurantId) {
-        int userId = SecurityUtil.authUserId();
-        checkNew(dish);
-        log.info("user {} create {} for restaurant {}", userId, dish, restaurantId);
-        return service.create(dish, restaurantId, userId);
+    @Override
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void update(@RequestBody Dish dish, @PathVariable int id, @RequestParam int restaurantId) {
+        super.update(dish, id, restaurantId);
     }
 
-    public void update(Dish dish, int id, int restaurantId) {
-        int userId = SecurityUtil.authUserId();
-        assureIdConsistent(dish, id);
-        log.info("user {} update {} for restaurant {}", userId, dish, restaurantId);
-        service.update(dish, restaurantId, userId);
+    @Override
+    @DeleteMapping("/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable int id, @RequestParam int restaurantId) {
+        super.delete(id, restaurantId);
     }
 
-    public void delete(int id, int restaurantId) {
-        int userId = SecurityUtil.authUserId();
-        log.info("user {} delete dish {} for restaurant {}", userId, id, restaurantId);
-        service.delete(id, restaurantId, userId);
+    @Override
+    @GetMapping("/{id}")
+    public Dish get(@PathVariable int id, @RequestParam int restaurantId) {
+        return super.get(id, restaurantId);
     }
 
-    public Dish get(int id, int restaurantId) {
-        int userId = SecurityUtil.authUserId();
-        log.info("user {} get dish {} for restaurant {}", userId, id, restaurantId);
-        return service.get(id, restaurantId);
-    }
-
-    public List<Dish> getAll(int restaurantId, LocalDate date) {
-        int userId = SecurityUtil.authUserId();
-        log.info("user {} getAll dish for restaurant {} for {}", userId, restaurantId, date);
-        return service.getAll(restaurantId, date);
+    // Подумать, про @RequestParam(required = false) у date
+    @Override
+    @GetMapping
+    public List<Dish> getAll(@RequestParam int restaurantId, @RequestParam LocalDate date) {
+        return super.getAll(restaurantId, date);
     }
 }
