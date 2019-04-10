@@ -1,13 +1,11 @@
 package ru.javawebinar.voting.service;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.javawebinar.voting.model.Role;
 import ru.javawebinar.voting.model.User;
 import ru.javawebinar.voting.util.exception.NotFoundException;
@@ -16,21 +14,21 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static ru.javawebinar.voting.UserTestData.*;
 
-@ContextConfiguration({
+@SpringJUnitConfig(locations = {
         "classpath:spring/spring-app.xml",
         "classpath:spring/spring-db.xml"
 })
-@RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
-public class UserServiceTest {
+class UserServiceTest {
 
     @Autowired
     private UserService service;
 
     @Test
-    public void create() {
+    void create() {
         User newUser = new User(null, "New", "new@gmail.com", "newPass", false, new Date(), Collections.singleton(Role.ROLE_USER));
         User created = service.create(newUser);
         newUser.setId(created.getId());
@@ -38,13 +36,13 @@ public class UserServiceTest {
         assertMatch(service.getAll(), ADMIN, newUser, USER);
     }
 
-    @Test(expected = DataAccessException.class)
-    public void duplicateMailCreate() {
-        service.create(new User(null, "Duplicate", "user@yandex.ru", "newPass", Role.ROLE_USER));
+    @Test
+    void duplicateMailCreate() {
+        assertThrows(DataAccessException.class, () -> service.create(new User(null, "Duplicate", "user@yandex.ru", "newPass", Role.ROLE_USER)));
     }
 
     @Test
-    public void update() {
+    void update() {
         User updated = new User(USER);
         updated.setName("UpdatedName");
         updated.setRoles(Collections.singletonList(Role.ROLE_ADMIN));
@@ -53,40 +51,40 @@ public class UserServiceTest {
     }
 
     @Test
-    public void delete() {
+    void delete() {
         service.delete(USER_ID);
         assertMatch(service.getAll(), ADMIN);
     }
 
-    @Test(expected = NotFoundException.class)
-    public void deletedNotFound() {
-        service.delete(1);
+    @Test
+    void deletedNotFound() {
+        assertThrows(NotFoundException.class, () -> service.delete(1));
     }
 
     @Test
-    public void get() {
+    void get() {
         User user = service.get(ADMIN_ID);
         assertMatch(user, ADMIN);
     }
 
-    @Test(expected = NotFoundException.class)
-    public void getNotFound() {
-        service.get(1);
+    @Test
+    void getNotFound() {
+        assertThrows(NotFoundException.class, () -> service.get(1));
     }
 
     @Test
-    public void getByEmail() {
+    void getByEmail() {
         User user = service.getByEmail("admin@gmail.com");
         assertMatch(user, ADMIN);
     }
 
-    @Test(expected = NotFoundException.class)
-    public void getByEmailNotFound() {
-        service.getByEmail("NewUser@yandex.ru");
+    @Test
+    void getByEmailNotFound() {
+        assertThrows(NotFoundException.class, () -> service.getByEmail("NewUser@yandex.ru"));
     }
 
     @Test
-    public void getAll() {
+    void getAll() {
         List<User> all = service.getAll();
         assertMatch(all, ADMIN, USER);
     }

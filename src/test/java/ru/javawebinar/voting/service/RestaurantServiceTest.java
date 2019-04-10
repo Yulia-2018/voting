@@ -1,33 +1,31 @@
 package ru.javawebinar.voting.service;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.javawebinar.voting.model.Restaurant;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static ru.javawebinar.voting.RestaurantTestData.*;
 import static ru.javawebinar.voting.UserTestData.ADMIN_ID;
 
-@ContextConfiguration({
+@SpringJUnitConfig(locations = {
         "classpath:spring/spring-app.xml",
         "classpath:spring/spring-db.xml"
 })
-@RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
-public class RestaurantServiceTest {
+class RestaurantServiceTest {
 
     @Autowired
     private RestaurantService service;
 
     @Test
-    public void create() {
+    void create() {
         Restaurant newRestaurant = new Restaurant(null, "Новый ресторан");
         Restaurant created = service.create(newRestaurant, ADMIN_ID);
         newRestaurant.setId(created.getId());
@@ -43,7 +41,7 @@ public class RestaurantServiceTest {
     }*/
 
     @Test
-    public void update() {
+    void update() {
         Restaurant updated = new Restaurant(RESTAURANT1);
         updated.setName("UpdatedName");
         service.update(updated, ADMIN_ID);
@@ -59,7 +57,7 @@ public class RestaurantServiceTest {
     }*/
 
     @Test
-    public void delete() {
+    void delete() {
         service.delete(RESTAURANT1_ID, ADMIN_ID);
         assertMatch(service.getAll(), RESTAURANT2);
     }
@@ -70,24 +68,24 @@ public class RestaurantServiceTest {
         service.delete(RESTAURANT1_ID, USER_ID);
     }*/
 
-    @Test(expected = NotFoundException.class)
-    public void deleteNotFound() {
-        service.delete(1, ADMIN_ID);
+    @Test
+    void deleteNotFound() {
+        assertThrows(NotFoundException.class, () -> service.delete(1, ADMIN_ID));
     }
 
     @Test
-    public void get() {
+    void get() {
         Restaurant restaurant = service.get(RESTAURANT2_ID);
         assertMatch(restaurant, RESTAURANT2);
     }
 
-    @Test(expected = NotFoundException.class)
-    public void getNotFound() {
-        service.get(1);
+    @Test
+    void getNotFound() {
+        assertThrows(NotFoundException.class, () -> service.get(1));
     }
 
     @Test
-    public void getAll() {
+    void getAll() {
         List<Restaurant> all = service.getAll();
         assertMatch(all, RESTAURANT2, RESTAURANT1);
     }
