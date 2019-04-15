@@ -3,30 +3,23 @@ package ru.javawebinar.voting.web;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.javawebinar.voting.model.Restaurant;
 import ru.javawebinar.voting.model.Vote;
 import ru.javawebinar.voting.service.VoteService;
 import ru.javawebinar.voting.to.ResultVote;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static ru.javawebinar.voting.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.voting.util.ValidationUtil.checkNew;
+import static ru.javawebinar.voting.util.VotesUtil.getFilteredResults;
 
 public abstract class AbstractVoteController {
     private static final Logger log = LoggerFactory.getLogger(VoteRestController.class);
 
     @Autowired
     private VoteService service;
-
-    // Потом сделать private
-    public static final Comparator<ResultVote> RESULT_VOTE_COMPARATOR = Comparator.comparing(ResultVote::getQuantity).thenComparing(ResultVote::getName);
 
     public Vote create(Vote vote) {
         // При создании голоса мы скорее всего его будем формировать как то так:
@@ -58,13 +51,6 @@ public abstract class AbstractVoteController {
         int userId = SecurityUtil.authUserId();
         log.info("user {} getResult vote", userId);
         List<Vote> votes = service.getAll(date);
-        Map<Restaurant, Long> quantityByRestaurant = votes.stream()
-                .collect(
-                        Collectors.groupingBy(Vote::getRestaurant, Collectors.counting())
-                );
-        List<ResultVote> result = new ArrayList<>();
-        quantityByRestaurant.forEach((key, value) -> result.add(new ResultVote(key.getId(), key.getName(), date, value.intValue())));
-        result.sort(RESULT_VOTE_COMPARATOR);
-        return result;
+        return getFilteredResults(votes, date);
     }
 }

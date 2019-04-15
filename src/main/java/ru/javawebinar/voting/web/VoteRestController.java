@@ -18,7 +18,7 @@ public class VoteRestController extends AbstractVoteController {
     static final String REST_URL = "/rest/votes";
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Vote> createWithLocation(Vote vote) {
+    public ResponseEntity<Vote> createWithLocation(@RequestBody Vote vote) {
         Vote created = super.create(vote);
 
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
