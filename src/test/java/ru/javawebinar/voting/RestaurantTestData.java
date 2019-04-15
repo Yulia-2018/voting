@@ -1,5 +1,6 @@
 package ru.javawebinar.voting;
 
+import org.springframework.test.web.servlet.ResultMatcher;
 import ru.javawebinar.voting.model.Restaurant;
 
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static ru.javawebinar.voting.DishTestData.DISHES1;
 import static ru.javawebinar.voting.DishTestData.DISHES2;
+import static ru.javawebinar.voting.TestUtil.readListFromJsonMvcResult;
 import static ru.javawebinar.voting.model.AbstractBaseEntity.START_SEQ;
 
 public class RestaurantTestData {
@@ -15,6 +17,14 @@ public class RestaurantTestData {
 
     public static final Restaurant RESTAURANT1 = new Restaurant(RESTAURANT1_ID, "Элис", DISHES1);
     public static final Restaurant RESTAURANT2 = new Restaurant(RESTAURANT2_ID, "Местечко", DISHES2);
+
+    public static Restaurant getCreated() {
+        return new Restaurant(null, "Новый ресторан");
+    }
+
+    public static Restaurant getUpdated() {
+        return new Restaurant(RESTAURANT1_ID, "Обновленный ресторан");
+    }
 
     public static void assertMatch(Restaurant actual, Restaurant expected) {
         //assertThat(actual).isEqualToComparingFieldByField(expected);
@@ -28,5 +38,9 @@ public class RestaurantTestData {
     public static void assertMatch(Iterable<Restaurant> actual, Iterable<Restaurant> expected) {
         //assertThat(actual).usingFieldByFieldElementComparator().isEqualTo(expected);
         assertThat(actual).usingElementComparatorIgnoringFields("dishes").isEqualTo(expected);
+    }
+
+    public static ResultMatcher contentJson(Restaurant... expected) {
+        return result -> assertMatch(readListFromJsonMvcResult(result, Restaurant.class), List.of(expected));
     }
 }

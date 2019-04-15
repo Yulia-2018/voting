@@ -3,13 +3,16 @@ package ru.javawebinar.voting.to;
 import java.time.LocalDate;
 
 public class ResultVote {
-    private final Integer id;
+    private Integer id;
 
-    private final String name;
+    private String name;
 
-    private final LocalDate date;
+    private LocalDate date;
 
-    private final int quantity;
+    private int quantity;
+
+    public ResultVote() {
+    }
 
     public ResultVote(Integer id, String name, LocalDate date, int quantity) {
         this.id = id;
@@ -32,6 +35,28 @@ public class ResultVote {
 
     public int getQuantity() {
         return quantity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ResultVote that = (ResultVote) o;
+
+        if (quantity != that.quantity) return false;
+        if (!id.equals(that.id)) return false;
+        if (!name.equals(that.name)) return false;
+        return date.equals(that.date);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + date.hashCode();
+        result = 31 * result + quantity;
+        return result;
     }
 
     @Override
