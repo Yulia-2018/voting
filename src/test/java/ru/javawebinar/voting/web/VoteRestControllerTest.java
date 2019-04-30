@@ -82,6 +82,13 @@ class VoteRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void testGetUnauth() throws Exception {
+        mockMvc.perform(get(REST_URL + VOTE1_ID))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void testGetResult() throws Exception {
         LocalDate date = LocalDate.of(2019, 1, 1);
         mockMvc.perform(get(REST_URL).param("date", "2019-01-01")

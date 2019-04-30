@@ -47,6 +47,17 @@ class DishRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void testCreateForbidden() throws Exception {
+        Dish created = DishTestData.getCreated();
+        mockMvc.perform(post(REST_URL + "?restaurantId=" + RESTAURANT1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(created))
+                .with(userHttpBasic(USER)))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void testUpdate() throws Exception {
         Dish updated = DishTestData.getUpdated();
 
@@ -60,12 +71,31 @@ class DishRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void testUpdateForbidden() throws Exception {
+        Dish updated = DishTestData.getUpdated();
+
+        mockMvc.perform(put(REST_URL + DISH1_ID + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated))
+                .with(userHttpBasic(USER)))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void testDelete() throws Exception {
         mockMvc.perform(delete(REST_URL + DISH2_ID + "?restaurantId=" + RESTAURANT2_ID)
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
         assertMatch(service.getAll(RESTAURANT2_ID, LocalDate.of(2019, 1, 1)), DISH2_2);
+    }
+
+    @Test
+    void testDeleteForbidden() throws Exception {
+        mockMvc.perform(delete(REST_URL + DISH2_ID + "?restaurantId=" + RESTAURANT2_ID)
+                .with(userHttpBasic(USER)))
+                .andDo(print())
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -76,6 +106,13 @@ class DishRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(result -> assertMatch(readFromJsonMvcResult(result, Dish.class), DISH1_1));
+    }
+
+    @Test
+    void testGetUnauth() throws Exception {
+        mockMvc.perform(get(REST_URL + DISH1_ID + "?restaurantId=" + RESTAURANT1_ID))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

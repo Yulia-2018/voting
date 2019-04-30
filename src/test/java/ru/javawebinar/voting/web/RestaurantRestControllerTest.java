@@ -41,6 +41,17 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void testCreateForbidden() throws Exception {
+        Restaurant created = getCreated();
+        mockMvc.perform(post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(created))
+                .with(userHttpBasic(USER)))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void testUpdate() throws Exception {
         Restaurant updated = getUpdated();
 
@@ -54,12 +65,31 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void testUpdateForbidden() throws Exception {
+        Restaurant updated = getUpdated();
+
+        mockMvc.perform(put(REST_URL + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated))
+                .with(userHttpBasic(USER)))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void testDelete() throws Exception {
         mockMvc.perform(delete(REST_URL + RESTAURANT1_ID)
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
         assertMatch(service.getAll(), RESTAURANT2);
+    }
+
+    @Test
+    void testDeleteForbidden() throws Exception {
+        mockMvc.perform(delete(REST_URL + RESTAURANT1_ID)
+                .with(userHttpBasic(USER)))
+                .andDo(print())
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -70,6 +100,13 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(result -> assertMatch(readFromJsonMvcResult(result, Restaurant.class), RESTAURANT1));
+    }
+
+    @Test
+    void testGetUnauth() throws Exception {
+        mockMvc.perform(get(REST_URL + RESTAURANT1_ID))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
