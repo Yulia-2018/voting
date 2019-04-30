@@ -13,8 +13,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javawebinar.voting.RestaurantTestData.*;
-import static ru.javawebinar.voting.TestUtil.readFromJson;
-import static ru.javawebinar.voting.TestUtil.readFromJsonMvcResult;
+import static ru.javawebinar.voting.TestUtil.*;
+import static ru.javawebinar.voting.UserTestData.ADMIN;
+import static ru.javawebinar.voting.UserTestData.USER;
 
 class RestaurantRestControllerTest extends AbstractControllerTest {
 
@@ -28,7 +29,8 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
         Restaurant created = getCreated();
         ResultActions action = mockMvc.perform(post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(created)))
+                .content(JsonUtil.writeValue(created))
+                .with(userHttpBasic(ADMIN)))
                 .andDo(print());
 
         Restaurant returned = readFromJson(action, Restaurant.class);
@@ -43,7 +45,8 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
         Restaurant updated = getUpdated();
 
         mockMvc.perform(put(REST_URL + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(updated)))
+                .content(JsonUtil.writeValue(updated))
+                .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
@@ -52,7 +55,8 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testDelete() throws Exception {
-        mockMvc.perform(delete(REST_URL + RESTAURANT1_ID))
+        mockMvc.perform(delete(REST_URL + RESTAURANT1_ID)
+                .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
         assertMatch(service.getAll(), RESTAURANT2);
@@ -60,7 +64,8 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testGet() throws Exception {
-        mockMvc.perform(get(REST_URL + RESTAURANT1_ID))
+        mockMvc.perform(get(REST_URL + RESTAURANT1_ID)
+                .with(userHttpBasic(USER)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -69,7 +74,8 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testGetAll() throws Exception {
-        mockMvc.perform(get(REST_URL))
+        mockMvc.perform(get(REST_URL)
+                .with(userHttpBasic(USER)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))

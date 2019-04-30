@@ -1,6 +1,7 @@
 package ru.javawebinar.voting.service;
 
 import ru.javawebinar.voting.model.User;
+import ru.javawebinar.voting.to.UserTo;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
 import java.util.List;
@@ -11,6 +12,8 @@ public interface UserService {
 
     void update(User user);
 
+    void update(UserTo user);
+
     void delete(int id) throws NotFoundException;
 
     User get(int id) throws NotFoundException;
@@ -18,4 +21,6 @@ public interface UserService {
     User getByEmail(String email) throws NotFoundException;
 
     List<User> getAll();
+
+    void enable(int id, boolean enable);
 }

@@ -2,8 +2,7 @@ package ru.javawebinar.voting.to;
 
 import java.time.LocalDate;
 
-public class ResultVote {
-    private Integer id;
+public class ResultVote extends BaseTo {
 
     private String name;
 
@@ -15,14 +14,10 @@ public class ResultVote {
     }
 
     public ResultVote(Integer id, String name, LocalDate date, int quantity) {
-        this.id = id;
+        super(id);
         this.name = name;
         this.date = date;
         this.quantity = quantity;
-    }
-
-    public Integer getId() {
-        return id;
     }
 
     public String getName() {

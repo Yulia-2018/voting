@@ -3,6 +3,7 @@ package ru.javawebinar.voting.web;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.voting.model.Restaurant;
@@ -15,6 +16,7 @@ import java.util.List;
 public class RestaurantRestController extends AbstractRestaurantController {
     static final String REST_URL = "/rest/restaurants";
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Restaurant> createWithLocation(@RequestBody Restaurant restaurant) {
         Restaurant created = super.create(restaurant);
@@ -27,6 +29,7 @@ public class RestaurantRestController extends AbstractRestaurantController {
     }
 
     @Override
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void update(@RequestBody Restaurant restaurant, @PathVariable int id) {
@@ -34,6 +37,7 @@ public class RestaurantRestController extends AbstractRestaurantController {
     }
 
     @Override
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id) {

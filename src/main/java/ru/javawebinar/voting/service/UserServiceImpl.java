@@ -1,37 +1,41 @@
 package ru.javawebinar.voting.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import ru.javawebinar.voting.AuthorizedUser;
 import ru.javawebinar.voting.model.User;
 import ru.javawebinar.voting.repository.UserRepository;
+import ru.javawebinar.voting.to.UserTo;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
 import java.util.List;
 
+import static ru.javawebinar.voting.util.UserUtil.prepareToSave;
+import static ru.javawebinar.voting.util.UserUtil.updateFromTo;
 import static ru.javawebinar.voting.util.ValidationUtil.checkNotFound;
 import static ru.javawebinar.voting.util.ValidationUtil.checkNotFoundWithId;
 
-@Service
-public class UserServiceImpl implements UserService {
+@Service("userService")
+public class UserServiceImpl implements UserService, UserDetailsService {
+
+    private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private final UserRepository repository;
-
-    public UserServiceImpl(UserRepository repository) {
+    public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public User create(User user) {
         Assert.notNull(user, "user must not be null");
-        return repository.save(user);
-    }
-
-    @Override
-    public void update(User user) {
-        Assert.notNull(user, "user must not be null");
-        checkNotFoundWithId(repository.save(user), user.getId());
+        return repository.save(prepareToSave(user, passwordEncoder));
     }
 
     @Override
@@ -53,5 +57,35 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAll() {
         return repository.getAll();
+    }
+
+    @Override
+    public void update(User user) {
+        Assert.notNull(user, "user must not be null");
+        checkNotFoundWithId(repository.save(prepareToSave(user, passwordEncoder)), user.getId());
+    }
+
+    @Transactional
+    @Override
+    public void update(UserTo userTo) {
+        User user = updateFromTo(get(userTo.getId()), userTo);
+        repository.save(prepareToSave(user, passwordEncoder));
+    }
+
+    @Override
+    @Transactional
+    public void enable(int id, boolean enabled) {
+        User user = get(id);
+        user.setEnabled(enabled);
+        repository.save(user);  // !! need only for JDBC implementation
+    }
+
+    @Override
+    public AuthorizedUser loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = repository.getByEmail(email.toLowerCase());
+        if (user == null) {
+            throw new UsernameNotFoundException("User " + email + " is not found");
+        }
+        return new AuthorizedUser(user);
     }
 }

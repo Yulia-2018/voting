@@ -17,8 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javawebinar.voting.RestaurantTestData.RESTAURANT1;
-import static ru.javawebinar.voting.TestUtil.readFromJson;
-import static ru.javawebinar.voting.TestUtil.readFromJsonMvcResult;
+import static ru.javawebinar.voting.TestUtil.*;
+import static ru.javawebinar.voting.UserTestData.USER;
 import static ru.javawebinar.voting.UserTestData.USER_ID;
 import static ru.javawebinar.voting.VoteTestData.*;
 import static ru.javawebinar.voting.util.VotesUtil.getFilteredResults;
@@ -37,7 +37,8 @@ class VoteRestControllerTest extends AbstractControllerTest {
             Vote created = getCreated();
             ResultActions action = mockMvc.perform(post(REST_URL)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(JsonUtil.writeValue(created)))
+                    .content(JsonUtil.writeValue(created))
+                    .with(userHttpBasic(USER)))
                     .andDo(print());
 
             Vote returned = readFromJson(action, Vote.class);
@@ -59,7 +60,8 @@ class VoteRestControllerTest extends AbstractControllerTest {
 
             int id = updated.getId();
             mockMvc.perform(put(REST_URL + id).contentType(MediaType.APPLICATION_JSON)
-                    .content(JsonUtil.writeValue(updated)))
+                    .content(JsonUtil.writeValue(updated))
+                    .with(userHttpBasic(USER)))
                     .andDo(print())
                     .andExpect(status().isNoContent());
 
@@ -71,7 +73,8 @@ class VoteRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testGet() throws Exception {
-        mockMvc.perform(get(REST_URL + VOTE1_ID))
+        mockMvc.perform(get(REST_URL + VOTE1_ID)
+                .with(userHttpBasic(USER)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -81,7 +84,8 @@ class VoteRestControllerTest extends AbstractControllerTest {
     @Test
     void testGetResult() throws Exception {
         LocalDate date = LocalDate.of(2019, 1, 1);
-        mockMvc.perform(get(REST_URL).param("date", "2019-01-01"))
+        mockMvc.perform(get(REST_URL).param("date", "2019-01-01")
+                .with(userHttpBasic(USER)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
