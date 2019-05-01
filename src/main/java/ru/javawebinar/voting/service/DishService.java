@@ -1,7 +1,6 @@
 package ru.javawebinar.voting.service;
 
 import ru.javawebinar.voting.model.Dish;
-import ru.javawebinar.voting.util.exception.NoAccessException;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
 import java.time.LocalDate;
@@ -9,11 +8,11 @@ import java.util.List;
 
 public interface DishService {
 
-    Dish create(Dish dish, int restaurantId, int userId) throws NoAccessException;
+    Dish create(Dish dish, int restaurantId);
 
-    void update(Dish dish, int restaurantId, int userId) throws NotFoundException, NoAccessException;
+    void update(Dish dish, int restaurantId) throws NotFoundException;
 
-    void delete(int id, int restaurantId, int userId) throws NotFoundException, NoAccessException;
+    void delete(int id, int restaurantId) throws NotFoundException;
 
     Dish get(int id, int restaurantId) throws NotFoundException;
 

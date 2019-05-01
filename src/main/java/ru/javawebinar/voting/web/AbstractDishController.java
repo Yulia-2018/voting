@@ -22,20 +22,20 @@ public abstract class AbstractDishController {
         int userId = SecurityUtil.authUserId();
         checkNew(dish);
         log.info("user {} create {} for restaurant {}", userId, dish, restaurantId);
-        return service.create(dish, restaurantId, userId);
+        return service.create(dish, restaurantId);
     }
 
     public void update(Dish dish, int id, int restaurantId) {
         int userId = SecurityUtil.authUserId();
         assureIdConsistent(dish, id);
         log.info("user {} update {} for restaurant {}", userId, dish, restaurantId);
-        service.update(dish, restaurantId, userId);
+        service.update(dish, restaurantId);
     }
 
     public void delete(int id, int restaurantId) {
         int userId = SecurityUtil.authUserId();
         log.info("user {} delete dish {} for restaurant {}", userId, id, restaurantId);
-        service.delete(id, restaurantId, userId);
+        service.delete(id, restaurantId);
     }
 
     public Dish get(int id, int restaurantId) {

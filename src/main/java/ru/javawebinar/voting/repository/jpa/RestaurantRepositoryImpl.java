@@ -18,8 +18,7 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
 
     @Override
     @Transactional
-    public Restaurant save(Restaurant restaurant, int userId) {
-        // Сделать проверку, что это может делать только админ
+    public Restaurant save(Restaurant restaurant) {
         if (restaurant.isNew()) {
             em.persist(restaurant);
             return restaurant;
@@ -30,8 +29,7 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
 
     @Override
     @Transactional
-    public boolean delete(int id, int userId) {
-        // Сделать проверку, что это может делать только админ
+    public boolean delete(int id) {
         return em.createNamedQuery(Restaurant.DELETE)
                 .setParameter("id", id)
                 .executeUpdate() != 0;

@@ -20,8 +20,7 @@ public class DishRepositoryImpl implements DishRepository {
 
     @Override
     @Transactional
-    public Dish save(Dish dish, int restaurantId, int userId) {
-        // Сделать проверку, что это может делать только админ
+    public Dish save(Dish dish, int restaurantId) {
         Restaurant ref = em.getReference(Restaurant.class, restaurantId);
         dish.setRestaurant(ref);
         if (dish.isNew()) {
@@ -34,8 +33,7 @@ public class DishRepositoryImpl implements DishRepository {
 
     @Override
     @Transactional
-    public boolean delete(int id, int restaurantId, int userId) {
-        // Сделать проверку, что это может делать только админ
+    public boolean delete(int id, int restaurantId) {
         return em.createNamedQuery(Dish.DELETE)
                 .setParameter("id", id)
                 .setParameter("restaurantId", restaurantId)

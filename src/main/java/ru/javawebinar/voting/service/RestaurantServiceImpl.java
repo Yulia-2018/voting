@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import ru.javawebinar.voting.model.Restaurant;
 import ru.javawebinar.voting.repository.RestaurantRepository;
-import ru.javawebinar.voting.util.exception.NoAccessException;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
 import java.util.List;
@@ -23,20 +22,20 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public Restaurant create(Restaurant restaurant, int userId) throws NoAccessException {
+    public Restaurant create(Restaurant restaurant) {
         Assert.notNull(restaurant, "restaurant must not be null");
-        return repository.save(restaurant, userId);
+        return repository.save(restaurant);
     }
 
     @Override
-    public void update(Restaurant restaurant, int userId) throws NoAccessException {
+    public void update(Restaurant restaurant) {
         Assert.notNull(restaurant, "restaurant must not be null");
-        checkNotFoundWithId(repository.save(restaurant, userId), restaurant.getId());
+        checkNotFoundWithId(repository.save(restaurant), restaurant.getId());
     }
 
     @Override
-    public void delete(int id, int userId) throws NotFoundException, NoAccessException {
-        checkNotFoundWithId(repository.delete(id, userId), id);
+    public void delete(int id) throws NotFoundException {
+        checkNotFoundWithId(repository.delete(id), id);
     }
 
     @Override

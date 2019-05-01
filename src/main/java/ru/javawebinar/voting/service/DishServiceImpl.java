@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import ru.javawebinar.voting.model.Dish;
 import ru.javawebinar.voting.repository.DishRepository;
-import ru.javawebinar.voting.util.exception.NoAccessException;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
 import java.time.LocalDate;
@@ -24,20 +23,20 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public Dish create(Dish dish, int restaurantId, int userId) throws NoAccessException {
+    public Dish create(Dish dish, int restaurantId) {
         Assert.notNull(dish, "dish must not be null");
-        return repository.save(dish, restaurantId, userId);
+        return repository.save(dish, restaurantId);
     }
 
     @Override
-    public void update(Dish dish, int restaurantId, int userId) throws NotFoundException, NoAccessException {
+    public void update(Dish dish, int restaurantId) throws NotFoundException {
         Assert.notNull(dish, "dish must not be null");
-        checkNotFoundWithId(repository.save(dish, restaurantId, userId), dish.getId());
+        checkNotFoundWithId(repository.save(dish, restaurantId), dish.getId());
     }
 
     @Override
-    public void delete(int id, int restaurantId, int userId) throws NotFoundException, NoAccessException {
-        checkNotFoundWithId(repository.delete(id, restaurantId, userId), id);
+    public void delete(int id, int restaurantId) throws NotFoundException {
+        checkNotFoundWithId(repository.delete(id, restaurantId), id);
     }
 
     @Override

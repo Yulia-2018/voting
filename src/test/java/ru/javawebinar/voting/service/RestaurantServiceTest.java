@@ -12,7 +12,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static ru.javawebinar.voting.RestaurantTestData.*;
-import static ru.javawebinar.voting.UserTestData.ADMIN_ID;
 
 @SpringJUnitConfig(locations = {
         "classpath:spring/spring-app.xml",
@@ -27,50 +26,29 @@ class RestaurantServiceTest {
     @Test
     void create() {
         Restaurant newRestaurant = new Restaurant(null, "Новый ресторан");
-        Restaurant created = service.create(newRestaurant, ADMIN_ID);
+        Restaurant created = service.create(newRestaurant);
         newRestaurant.setId(created.getId());
         assertMatch(newRestaurant, created);
         assertMatch(service.getAll(), RESTAURANT2, newRestaurant, RESTAURANT1);
     }
 
-    // Реализовать такую функциональность
-    /*@Test(expected = NoAccessException.class)
-    public void createNoAccess() {
-        Restaurant newRestaurant = new Restaurant(null, "Новый ресторан");
-        service.create(newRestaurant, USER_ID);
-    }*/
-
     @Test
     void update() {
         Restaurant updated = new Restaurant(RESTAURANT1);
         updated.setName("UpdatedName");
-        service.update(updated, ADMIN_ID);
+        service.update(updated);
         assertMatch(service.get(RESTAURANT1_ID), updated);
     }
 
-    // Реализовать такую функциональность
-    /*@Test(expected = NoAccessException.class)
-    public void updateNoAccess() {
-        Restaurant updated = new Restaurant(RESTAURANT1);
-        updated.setName("UpdatedName");
-        service.update(updated, USER_ID);
-    }*/
-
     @Test
     void delete() {
-        service.delete(RESTAURANT1_ID, ADMIN_ID);
+        service.delete(RESTAURANT1_ID);
         assertMatch(service.getAll(), RESTAURANT2);
     }
 
-    // Реализовать такую функциональность
-    /*@Test(expected = NoAccessException.class)
-    public void deleteNoAccess() {
-        service.delete(RESTAURANT1_ID, USER_ID);
-    }*/
-
     @Test
     void deleteNotFound() {
-        assertThrows(NotFoundException.class, () -> service.delete(1, ADMIN_ID));
+        assertThrows(NotFoundException.class, () -> service.delete(1));
     }
 
     @Test

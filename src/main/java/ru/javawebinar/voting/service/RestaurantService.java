@@ -1,18 +1,17 @@
 package ru.javawebinar.voting.service;
 
 import ru.javawebinar.voting.model.Restaurant;
-import ru.javawebinar.voting.util.exception.NoAccessException;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
 import java.util.List;
 
 public interface RestaurantService {
 
-    Restaurant create(Restaurant restaurant, int userId) throws NoAccessException;
+    Restaurant create(Restaurant restaurant);
 
-    void update(Restaurant restaurant, int userId) throws NoAccessException;
+    void update(Restaurant restaurant);
 
-    void delete(int id, int userId) throws NotFoundException, NoAccessException;
+    void delete(int id) throws NotFoundException;
 
     Restaurant get(int id) throws NotFoundException;
 

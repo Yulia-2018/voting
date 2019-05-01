@@ -21,20 +21,20 @@ public abstract class AbstractRestaurantController {
         int userId = SecurityUtil.authUserId();
         checkNew(restaurant);
         log.info("user {} create {}", userId, restaurant);
-        return service.create(restaurant, userId);
+        return service.create(restaurant);
     }
 
     public void update(Restaurant restaurant, int id) {
         int userId = SecurityUtil.authUserId();
         assureIdConsistent(restaurant, id);
         log.info("user {} update {}", userId, restaurant);
-        service.update(restaurant, userId);
+        service.update(restaurant);
     }
 
     public void delete(int id) {
         int userId = SecurityUtil.authUserId();
         log.info("user {} delete restaurant {}", userId, id);
-        service.delete(id, userId);
+        service.delete(id);
     }
 
     public Restaurant get(int id) {
