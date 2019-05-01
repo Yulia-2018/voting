@@ -8,6 +8,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.voting.model.Vote;
 import ru.javawebinar.voting.to.ResultVote;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -18,7 +19,7 @@ public class VoteRestController extends AbstractVoteController {
     static final String REST_URL = "/rest/votes";
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Vote> createWithLocation(@RequestBody Vote vote) {
+    public ResponseEntity<Vote> createWithLocation(@Valid @RequestBody Vote vote) {
         Vote created = super.create(vote);
 
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -31,7 +32,7 @@ public class VoteRestController extends AbstractVoteController {
     @Override
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void update(@RequestBody Vote vote, @PathVariable int id) {
+    public void update(@Valid @RequestBody Vote vote, @PathVariable int id) {
         super.update(vote, id);
     }
 

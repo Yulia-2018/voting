@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.voting.DishTestData;
 import ru.javawebinar.voting.model.Dish;
 import ru.javawebinar.voting.service.DishService;
@@ -15,8 +17,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.javawebinar.voting.DishTestData.assertMatch;
-import static ru.javawebinar.voting.DishTestData.contentJson;
 import static ru.javawebinar.voting.DishTestData.*;
 import static ru.javawebinar.voting.RestaurantTestData.*;
 import static ru.javawebinar.voting.TestUtil.*;
@@ -54,7 +54,31 @@ class DishRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(created))
                 .with(userHttpBasic(USER)))
                 .andDo(print())
-                .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden())
+                .andExpect(detailMessage("Access is denied"));
+    }
+
+    @Test
+    void testCreateInvalid() throws Exception {
+        Dish created = new Dish(null, "   ", 0, null);
+        mockMvc.perform(post(REST_URL + "?restaurantId=" + RESTAURANT1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(created))
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void testCreateDuplicateRestaurantDateName() throws Exception {
+        Dish created = new Dish(null, "Картошечка", 550, LocalDate.of(2019, 1, 1));
+        mockMvc.perform(post(REST_URL + "?restaurantId=" + RESTAURANT1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(created))
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print())
+                .andExpect(status().isConflict());
     }
 
     @Test
@@ -78,7 +102,42 @@ class DishRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(updated))
                 .with(userHttpBasic(USER)))
                 .andDo(print())
-                .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden())
+                .andExpect(detailMessage("Access is denied"));
+    }
+
+    @Test
+    void testUpdateInvalid() throws Exception {
+        Dish updated = new Dish(DISH1_ID, "Б", 150000, LocalDate.of(2019, 1, 1));
+
+        mockMvc.perform(put(REST_URL + DISH1_ID + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated))
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void testUpdateDuplicateRestaurantDateName() throws Exception {
+        Dish updated = new Dish(DISH1_ID, "Шашлычок", 100, LocalDate.of(2019, 1, 1));
+        mockMvc.perform(put(REST_URL + DISH1_ID + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated))
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print())
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testUpdateNotFound() throws Exception {
+        Dish updated = DishTestData.getUpdated();
+
+        mockMvc.perform(put(REST_URL + DISH1_ID + "?restaurantId=" + RESTAURANT2_ID).contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated))
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(detailMessage("Not found entity with id=" + DISH1_ID));
     }
 
     @Test
@@ -95,7 +154,17 @@ class DishRestControllerTest extends AbstractControllerTest {
         mockMvc.perform(delete(REST_URL + DISH2_ID + "?restaurantId=" + RESTAURANT2_ID)
                 .with(userHttpBasic(USER)))
                 .andDo(print())
-                .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden())
+                .andExpect(detailMessage("Access is denied"));
+    }
+
+    @Test
+    void testDeleteNotFound() throws Exception {
+        mockMvc.perform(delete(REST_URL + DISH2_ID + "?restaurantId=" + RESTAURANT1_ID)
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(detailMessage("Not found entity with id=" + DISH2_ID));
     }
 
     @Test
@@ -113,6 +182,15 @@ class DishRestControllerTest extends AbstractControllerTest {
         mockMvc.perform(get(REST_URL + DISH1_ID + "?restaurantId=" + RESTAURANT1_ID))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testGetNotFound() throws Exception {
+        mockMvc.perform(get(REST_URL + DISH2_ID + "?restaurantId=" + RESTAURANT1_ID)
+                .with(userHttpBasic(USER)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(detailMessage("Not found entity with id=" + DISH2_ID));
     }
 
     @Test

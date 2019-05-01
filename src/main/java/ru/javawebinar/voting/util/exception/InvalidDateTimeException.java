@@ -1,7 +1,9 @@
 package ru.javawebinar.voting.util.exception;
 
-public class InvalidDateTimeException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class InvalidDateTimeException extends ApplicationException {
     public InvalidDateTimeException(String message) {
-        super(message);
+        super(message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 }

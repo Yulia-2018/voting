@@ -1,10 +1,12 @@
 package ru.javawebinar.voting.util;
 
 
+import org.slf4j.Logger;
 import ru.javawebinar.voting.HasId;
 import ru.javawebinar.voting.util.exception.InvalidDateTimeException;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -51,5 +53,30 @@ public class ValidationUtil {
         if (date.compareTo(LocalDate.now()) != 0 | time.compareTo(LocalTime.of(11, 0)) > 0) {
             throw new InvalidDateTimeException("date " + date + " or time " + time + " is invalid");
         }
+    }
+
+    //  http://stackoverflow.com/a/28565320/548473
+    public static Throwable getRootCause(Throwable t) {
+        Throwable result = t;
+        Throwable cause;
+
+        while (null != (cause = result.getCause()) && (result != cause)) {
+            result = cause;
+        }
+        return result;
+    }
+
+    public static String getMessage(Throwable e) {
+        return e.getLocalizedMessage() != null ? e.getLocalizedMessage() : e.getClass().getName();
+    }
+
+    public static Throwable logAndGetRootCause(Logger log, HttpServletRequest req, Exception e, boolean logException) {
+        Throwable rootCause = ValidationUtil.getRootCause(e);
+        if (logException) {
+            log.error("request " + req.getRequestURL(), rootCause);
+        } else {
+            log.warn("request  {}: {}", req.getRequestURL(), rootCause.toString());
+        }
+        return rootCause;
     }
 }

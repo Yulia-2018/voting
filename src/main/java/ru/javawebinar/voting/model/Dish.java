@@ -3,6 +3,7 @@ package ru.javawebinar.voting.model;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Range;
+import ru.javawebinar.voting.View;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -20,7 +21,7 @@ public class Dish extends AbstractNamedEntity {
     public static final String ALL_SORTED = "Dish.getAllSorted";
 
     @Column(name = "price", nullable = false)
-    @Range(min = 1)
+    @Range(min = 1, max = 100000)
     private Integer price;
 
     @Column(name = "date", nullable = false, columnDefinition = "DATE default now()")
@@ -30,7 +31,7 @@ public class Dish extends AbstractNamedEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @NotNull
+    @NotNull(groups = View.Persist.class)
     private Restaurant restaurant;
 
     public Dish() {

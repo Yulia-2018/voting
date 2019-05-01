@@ -12,14 +12,15 @@ import ru.javawebinar.voting.web.json.JsonUtil;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import static org.hamcrest.core.StringContains.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javawebinar.voting.RestaurantTestData.RESTAURANT1;
 import static ru.javawebinar.voting.TestUtil.*;
-import static ru.javawebinar.voting.UserTestData.USER;
-import static ru.javawebinar.voting.UserTestData.USER_ID;
+import static ru.javawebinar.voting.UserTestData.*;
+import static ru.javawebinar.voting.VoteTestData.assertMatch;
 import static ru.javawebinar.voting.VoteTestData.*;
 import static ru.javawebinar.voting.util.VotesUtil.getFilteredResults;
 
@@ -30,11 +31,10 @@ class VoteRestControllerTest extends AbstractControllerTest {
     @Autowired
     private VoteService service;
 
-    // Работает только до 11 часов
     @Test
     void testCreate() throws Exception {
+        Vote created = getCreated();
         if (LocalTime.now().compareTo(LocalTime.of(11, 0)) <= 0) {
-            Vote created = getCreated();
             ResultActions action = mockMvc.perform(post(REST_URL)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(JsonUtil.writeValue(created))
@@ -47,18 +47,38 @@ class VoteRestControllerTest extends AbstractControllerTest {
             RestaurantTestData.assertMatch(returned.getRestaurant(), created.getRestaurant());
             assertMatch(returned, created);
             assertMatch(service.getAll(LocalDate.now()), created);
+        } else {
+            mockMvc.perform(post(REST_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(JsonUtil.writeValue(created))
+                    .with(userHttpBasic(USER)))
+                    .andDo(print())
+                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(content().string(containsString("date")))
+                    .andExpect(content().string(containsString("or time")))
+                    .andExpect(content().string(containsString("is invalid")));
         }
     }
 
-    // Работает только до 11 часов
+    @Test
+    void testCreateInvalid() throws Exception {
+        Vote created = new Vote(null, null, null);
+        mockMvc.perform(post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(created))
+                .with(userHttpBasic(USER)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
+    }
+
     @Test
     void testUpdate() throws Exception {
-        if (LocalTime.now().compareTo(LocalTime.of(11, 0)) <= 0) {
-            Vote created = createForCurrentDate(service);
-            Vote updated = new Vote(created);
-            updated.setRestaurant(RESTAURANT1);
+        Vote created = createForCurrentDate(service);
+        Vote updated = new Vote(created);
+        updated.setRestaurant(RESTAURANT1);
 
-            int id = updated.getId();
+        int id = updated.getId();
+        if (LocalTime.now().compareTo(LocalTime.of(11, 0)) <= 0) {
             mockMvc.perform(put(REST_URL + id).contentType(MediaType.APPLICATION_JSON)
                     .content(JsonUtil.writeValue(updated))
                     .with(userHttpBasic(USER)))
@@ -68,6 +88,52 @@ class VoteRestControllerTest extends AbstractControllerTest {
             Vote actual = service.get(id, USER_ID);
             RestaurantTestData.assertMatch(actual.getRestaurant(), updated.getRestaurant());
             assertMatch(actual, updated);
+        } else {
+            mockMvc.perform(put(REST_URL + id).contentType(MediaType.APPLICATION_JSON)
+                    .content(JsonUtil.writeValue(updated))
+                    .with(userHttpBasic(USER)))
+                    .andDo(print())
+                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(content().string(containsString("date")))
+                    .andExpect(content().string(containsString("or time")))
+                    .andExpect(content().string(containsString("is invalid")));
+        }
+    }
+
+    @Test
+    void testUpdateInvalid() throws Exception {
+        Vote created = createForCurrentDate(service);
+        Vote updated = new Vote(created);
+        updated.setRestaurant(null);
+
+        int id = updated.getId();
+        mockMvc.perform(put(REST_URL + id).contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated))
+                .with(userHttpBasic(USER)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void testUpdateNotFound() throws Exception {
+        Vote updated = new Vote(1, LocalDate.now());
+        updated.setRestaurant(RESTAURANT1);
+        if (LocalTime.now().compareTo(LocalTime.of(11, 0)) <= 0) {
+            mockMvc.perform(put(REST_URL + 1).contentType(MediaType.APPLICATION_JSON)
+                    .content(JsonUtil.writeValue(updated))
+                    .with(userHttpBasic(USER)))
+                    .andDo(print())
+                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(detailMessage("Not found entity with id=1"));
+        } else {
+            mockMvc.perform(put(REST_URL + 1).contentType(MediaType.APPLICATION_JSON)
+                    .content(JsonUtil.writeValue(updated))
+                    .with(userHttpBasic(USER)))
+                    .andDo(print())
+                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(content().string(containsString("date")))
+                    .andExpect(content().string(containsString("or time")))
+                    .andExpect(content().string(containsString("is invalid")));
         }
     }
 
@@ -86,6 +152,15 @@ class VoteRestControllerTest extends AbstractControllerTest {
         mockMvc.perform(get(REST_URL + VOTE1_ID))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testGetNotFound() throws Exception {
+        mockMvc.perform(get(REST_URL + VOTE1_ID)
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(detailMessage("Not found entity with id=" + VOTE1_ID));
     }
 
     @Test
