@@ -3,6 +3,7 @@ package ru.javawebinar.voting.util;
 
 import org.slf4j.Logger;
 import ru.javawebinar.voting.HasId;
+import ru.javawebinar.voting.util.exception.IllegalRequestDataException;
 import ru.javawebinar.voting.util.exception.InvalidDateTimeException;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
@@ -36,7 +37,7 @@ public class ValidationUtil {
 
     public static void checkNew(HasId bean) {
         if (!bean.isNew()) {
-            throw new IllegalArgumentException(bean + " must be new (id=null)");
+            throw new IllegalRequestDataException(bean + " must be new (id=null)");
         }
     }
 
@@ -45,7 +46,7 @@ public class ValidationUtil {
         if (bean.isNew()) {
             bean.setId(id);
         } else if (bean.getId() != id) {
-            throw new IllegalArgumentException(bean + " must be with id=" + id);
+            throw new IllegalRequestDataException(bean + " must be with id=" + id);
         }
     }
 
