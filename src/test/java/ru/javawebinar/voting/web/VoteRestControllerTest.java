@@ -54,7 +54,7 @@ class VoteRestControllerTest extends AbstractControllerTest {
                     .with(userHttpBasic(USER)))
                     .andDo(print())
                     .andExpect(status().isUnprocessableEntity())
-                    .andExpect(content().string(containsString("date")))
+                    .andExpect(content().string(containsString("Date")))
                     .andExpect(content().string(containsString("or time")))
                     .andExpect(content().string(containsString("is invalid")));
         }
@@ -94,7 +94,7 @@ class VoteRestControllerTest extends AbstractControllerTest {
                     .with(userHttpBasic(USER)))
                     .andDo(print())
                     .andExpect(status().isUnprocessableEntity())
-                    .andExpect(content().string(containsString("date")))
+                    .andExpect(content().string(containsString("Date")))
                     .andExpect(content().string(containsString("or time")))
                     .andExpect(content().string(containsString("is invalid")));
         }
@@ -118,23 +118,25 @@ class VoteRestControllerTest extends AbstractControllerTest {
     void testUpdateNotFound() throws Exception {
         Vote updated = new Vote(1, LocalDate.now());
         updated.setRestaurant(RESTAURANT1);
-        if (LocalTime.now().compareTo(LocalTime.of(11, 0)) <= 0) {
-            mockMvc.perform(put(REST_URL + 1).contentType(MediaType.APPLICATION_JSON)
-                    .content(JsonUtil.writeValue(updated))
-                    .with(userHttpBasic(USER)))
-                    .andDo(print())
-                    .andExpect(status().isUnprocessableEntity())
-                    .andExpect(detailMessage("Not found entity with id=1"));
-        } else {
-            mockMvc.perform(put(REST_URL + 1).contentType(MediaType.APPLICATION_JSON)
-                    .content(JsonUtil.writeValue(updated))
-                    .with(userHttpBasic(USER)))
-                    .andDo(print())
-                    .andExpect(status().isUnprocessableEntity())
-                    .andExpect(content().string(containsString("date")))
-                    .andExpect(content().string(containsString("or time")))
-                    .andExpect(content().string(containsString("is invalid")));
-        }
+        mockMvc.perform(put(REST_URL + 1).contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated))
+                .with(userHttpBasic(USER)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(detailMessage("Not found entity with id=1"));
+    }
+
+    @Test
+    void testUpdateDate() throws Exception {
+        Vote updated = new Vote(VOTE1_USER);
+        LocalDate newDate = LocalDate.of(2019, 5, 3);
+        updated.setDate(newDate);
+        mockMvc.perform(put(REST_URL + VOTE1_ID).contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated))
+                .with(userHttpBasic(USER)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(detailMessage("The date of voting " + VOTE1_USER.getDate() + " cannot be changed to date " + newDate));
     }
 
     @Test

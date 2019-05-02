@@ -12,8 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import static ru.javawebinar.voting.util.ValidationUtil.checkInvalidDateTime;
-import static ru.javawebinar.voting.util.ValidationUtil.checkNotFoundWithId;
+import static ru.javawebinar.voting.util.ValidationUtil.*;
 
 @Service
 public class VoteServiceImpl implements VoteService {
@@ -35,8 +34,13 @@ public class VoteServiceImpl implements VoteService {
     @Override
     public void update(Vote vote, LocalTime time, int userId) throws NotFoundException, InvalidDateTimeException {
         Assert.notNull(vote, "vote must not be null");
-        checkInvalidDateTime(vote.getDate(), time);
-        checkNotFoundWithId(repository.save(vote, userId), vote.getId());
+        int id = vote.getId();
+        LocalDate date = vote.getDate();
+        Vote voteInDb = repository.get(id, userId);
+        checkNotFoundWithId(voteInDb, id);
+        checkInvalidDate(date, voteInDb.getDate());
+        checkInvalidDateTime(date, time);
+        repository.save(vote, userId);
     }
 
     @Override

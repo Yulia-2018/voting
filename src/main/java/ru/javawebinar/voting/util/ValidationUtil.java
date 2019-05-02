@@ -52,7 +52,13 @@ public class ValidationUtil {
 
     public static void checkInvalidDateTime(LocalDate date, LocalTime time) {
         if (date.compareTo(LocalDate.now()) != 0 | time.compareTo(LocalTime.of(11, 0)) > 0) {
-            throw new InvalidDateTimeException("date " + date + " or time " + time + " is invalid");
+            throw new InvalidDateTimeException("Date " + date + " or time " + time + " is invalid");
+        }
+    }
+
+    public static void checkInvalidDate(LocalDate newDate, LocalDate oldDate) {
+        if (newDate.compareTo(oldDate) != 0) {
+            throw new InvalidDateTimeException("The date of voting " + oldDate + " cannot be changed to date " + newDate);
         }
     }
 
@@ -74,9 +80,9 @@ public class ValidationUtil {
     public static Throwable logAndGetRootCause(Logger log, HttpServletRequest req, Exception e, boolean logException) {
         Throwable rootCause = ValidationUtil.getRootCause(e);
         if (logException) {
-            log.error("request " + req.getRequestURL(), rootCause);
+            log.error("Request " + req.getRequestURL(), rootCause);
         } else {
-            log.warn("request  {}: {}", req.getRequestURL(), rootCause.toString());
+            log.warn("Request  {}: {}", req.getRequestURL(), rootCause.toString());
         }
         return rootCause;
     }

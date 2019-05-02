@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static ru.javawebinar.voting.RestaurantTestData.RESTAURANT1;
 import static ru.javawebinar.voting.RestaurantTestData.RESTAURANT2;
 import static ru.javawebinar.voting.UserTestData.ADMIN_ID;
@@ -68,10 +69,8 @@ class VoteServiceTest {
     @Test
     void updateInvalidTime() {
         //assertThrows(InvalidDateTimeException.class, () -> service.update(VOTE_FOR_CURRENT_DATE, LocalTime.of(15, 25), USER_ID));
-        assertThrows(InvalidDateTimeException.class, () -> {
-            Vote created = createForCurrentDate(service);
-            service.update(created, LocalTime.of(15, 25), USER_ID);
-        });
+        Vote created = createForCurrentDate(service);
+        assertThrows(InvalidDateTimeException.class, () -> service.update(created, LocalTime.of(15, 25), USER_ID));
     }
 
     @Test
@@ -82,10 +81,18 @@ class VoteServiceTest {
     @Test
     void updateNotFound() {
         //assertThrows(NotFoundException.class, () -> service.update(VOTE_FOR_CURRENT_DATE, LocalTime.of(10, 0), ADMIN_ID));
-        assertThrows(NotFoundException.class, () -> {
-            Vote created = createForCurrentDate(service);
-            service.update(created, LocalTime.of(10, 0), ADMIN_ID);
-        });
+        Vote created = createForCurrentDate(service);
+        assertThrows(NotFoundException.class, () -> service.update(created, LocalTime.of(10, 0), ADMIN_ID));
+    }
+
+    @Test
+    void updateDate() {
+        Vote updated = new Vote(VOTE1_USER);
+        LocalDate newDate = LocalDate.of(2019, 5, 3);
+        updated.setDate(newDate);
+        InvalidDateTimeException e = assertThrows(InvalidDateTimeException.class, () -> service.update(updated, LocalTime.of(10, 0), USER_ID));
+        String msg = e.getMessage();
+        assertTrue(msg.contains("The date of voting " + VOTE1_USER.getDate() + " cannot be changed to date " + newDate));
     }
 
     @Test
