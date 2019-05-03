@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.voting.RestaurantTestData;
 import ru.javawebinar.voting.model.Vote;
 import ru.javawebinar.voting.service.VoteService;
@@ -71,6 +73,30 @@ class VoteRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(USER)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void testCreateDuplicateUserDate() throws Exception {
+        Vote created = getCreated();
+        if (LocalTime.now().compareTo(LocalTime.of(11, 0)) <= 0) {
+            mockMvc.perform(post(REST_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(JsonUtil.writeValue(created))
+                    .with(userHttpBasic(USER)))
+                    .andDo(print())
+                    .andExpect(status().isConflict());
+        } else {
+            mockMvc.perform(post(REST_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(JsonUtil.writeValue(created))
+                    .with(userHttpBasic(USER)))
+                    .andDo(print())
+                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(content().string(containsString("Date")))
+                    .andExpect(content().string(containsString("or time")))
+                    .andExpect(content().string(containsString("is invalid")));
+        }
     }
 
     @Test
