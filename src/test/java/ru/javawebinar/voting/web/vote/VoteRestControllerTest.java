@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.javawebinar.voting.RestaurantTestData.RESTAURANT1;
 import static ru.javawebinar.voting.TestUtil.*;
 import static ru.javawebinar.voting.UserTestData.*;
 import static ru.javawebinar.voting.VoteTestData.assertMatch;
@@ -40,7 +39,7 @@ class VoteRestControllerTest extends AbstractControllerTest {
             ResultActions action = mockMvc.perform(post(REST_URL)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(JsonUtil.writeValue(created))
-                    .with(userHttpBasic(USER)))
+                    .with(userHttpBasic(ADMIN)))
                     .andDo(print())
                     .andExpect(status().isCreated());
 
@@ -49,12 +48,12 @@ class VoteRestControllerTest extends AbstractControllerTest {
 
             RestaurantTestData.assertMatch(returned.getRestaurant(), created.getRestaurant());
             assertMatch(returned, created);
-            assertMatch(service.getAll(LocalDate.now()), created);
+            assertMatch(service.getAll(created.getDate()), VOTE_FOR_CURRENT_DATE, created);
         } else {
             mockMvc.perform(post(REST_URL)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(JsonUtil.writeValue(created))
-                    .with(userHttpBasic(USER)))
+                    .with(userHttpBasic(ADMIN)))
                     .andDo(print())
                     .andExpect(status().isUnprocessableEntity())
                     .andExpect(content().string(containsString("Date")))
@@ -76,23 +75,20 @@ class VoteRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testUpdate() throws Exception {
-        Vote created = createForCurrentDate(service);
-        Vote updated = new Vote(created);
-        updated.setRestaurant(RESTAURANT1);
+        Vote updated = getUpdated();
 
-        int id = updated.getId();
         if (LocalTime.now().compareTo(LocalTime.of(11, 0)) <= 0) {
-            mockMvc.perform(put(REST_URL + id).contentType(MediaType.APPLICATION_JSON)
+            mockMvc.perform(put(REST_URL + VOTE_ID_FOR_CURRENT_DATE).contentType(MediaType.APPLICATION_JSON)
                     .content(JsonUtil.writeValue(updated))
                     .with(userHttpBasic(USER)))
                     .andDo(print())
                     .andExpect(status().isNoContent());
 
-            Vote actual = service.get(id, USER_ID);
+            Vote actual = service.get(VOTE_ID_FOR_CURRENT_DATE, USER_ID);
             RestaurantTestData.assertMatch(actual.getRestaurant(), updated.getRestaurant());
             assertMatch(actual, updated);
         } else {
-            mockMvc.perform(put(REST_URL + id).contentType(MediaType.APPLICATION_JSON)
+            mockMvc.perform(put(REST_URL + VOTE_ID_FOR_CURRENT_DATE).contentType(MediaType.APPLICATION_JSON)
                     .content(JsonUtil.writeValue(updated))
                     .with(userHttpBasic(USER)))
                     .andDo(print())
@@ -105,12 +101,9 @@ class VoteRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testUpdateInvalid() throws Exception {
-        Vote created = createForCurrentDate(service);
-        Vote updated = new Vote(created);
-        updated.setRestaurant(null);
+        Vote updated = new Vote(VOTE_ID_FOR_CURRENT_DATE, LocalDate.now(), USER, null);;
 
-        int id = updated.getId();
-        mockMvc.perform(put(REST_URL + id).contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(put(REST_URL + VOTE_ID_FOR_CURRENT_DATE).contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated))
                 .with(userHttpBasic(USER)))
                 .andDo(print())
@@ -119,14 +112,13 @@ class VoteRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testUpdateNotFound() throws Exception {
-        Vote updated = new Vote(1, LocalDate.now());
-        updated.setRestaurant(RESTAURANT1);
-        mockMvc.perform(put(REST_URL + 1).contentType(MediaType.APPLICATION_JSON)
+        Vote updated = getUpdated();
+        mockMvc.perform(put(REST_URL + VOTE_ID_FOR_CURRENT_DATE).contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated))
-                .with(userHttpBasic(USER)))
+                .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(detailMessage("Not found entity with id=1"));
+                .andExpect(detailMessage("Not found entity with id=" + VOTE_ID_FOR_CURRENT_DATE));
     }
 
     @Test

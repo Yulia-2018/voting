@@ -16,7 +16,6 @@ import java.time.LocalTime;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static ru.javawebinar.voting.RestaurantTestData.RESTAURANT1;
-import static ru.javawebinar.voting.RestaurantTestData.RESTAURANT2;
 import static ru.javawebinar.voting.UserTestData.ADMIN_ID;
 import static ru.javawebinar.voting.UserTestData.USER_ID;
 import static ru.javawebinar.voting.VoteTestData.*;
@@ -33,19 +32,17 @@ class VoteServiceTest {
 
     @Test
     void create() {
-        LocalDate date = LocalDate.now();
-        Vote newVote = new Vote(null, date, RESTAURANT2);
+        Vote newVote = getCreated();
         Vote created = service.create(newVote, LocalTime.of(10, 25), ADMIN_ID);
         newVote.setId(created.getId());
         RestaurantTestData.assertMatch(newVote.getRestaurant(), created.getRestaurant());
         assertMatch(newVote, created);
-        assertMatch(service.getAll(date), newVote);
+        assertMatch(service.getAll(newVote.getDate()), VOTE_FOR_CURRENT_DATE, newVote);
     }
 
     @Test
     void createInvalidTime() {
-        Vote newVote = new Vote(null, LocalDate.now(), RESTAURANT2);
-        assertThrows(InvalidDateTimeException.class, () -> service.create(newVote, LocalTime.of(12, 30), USER_ID));
+        assertThrows(InvalidDateTimeException.class, () -> service.create(getCreated(), LocalTime.of(12, 30), USER_ID));
     }
 
     @Test
@@ -54,23 +51,18 @@ class VoteServiceTest {
         assertThrows(InvalidDateTimeException.class, () -> service.create(newVote, LocalTime.of(10, 30), USER_ID));
     }
 
-    // Здесь мы сравниваем только id и date, так как restaurant и user мы не сравниваем
     @Test
     void update() {
-        Vote created = createForCurrentDate(service);
-        Vote updated = new Vote(created);
-        updated.setRestaurant(RESTAURANT1);
+        Vote updated = getUpdated();
         service.update(updated, LocalTime.of(9, 35), USER_ID);
-        Vote actual = service.get(updated.getId(), USER_ID);
+        Vote actual = service.get(VOTE_ID_FOR_CURRENT_DATE, USER_ID);
         RestaurantTestData.assertMatch(actual.getRestaurant(), updated.getRestaurant());
         assertMatch(actual, updated);
     }
 
     @Test
     void updateInvalidTime() {
-        //assertThrows(InvalidDateTimeException.class, () -> service.update(VOTE_FOR_CURRENT_DATE, LocalTime.of(15, 25), USER_ID));
-        Vote created = createForCurrentDate(service);
-        assertThrows(InvalidDateTimeException.class, () -> service.update(created, LocalTime.of(15, 25), USER_ID));
+        assertThrows(InvalidDateTimeException.class, () -> service.update(getUpdated(), LocalTime.of(15, 25), USER_ID));
     }
 
     @Test
@@ -80,9 +72,7 @@ class VoteServiceTest {
 
     @Test
     void updateNotFound() {
-        //assertThrows(NotFoundException.class, () -> service.update(VOTE_FOR_CURRENT_DATE, LocalTime.of(10, 0), ADMIN_ID));
-        Vote created = createForCurrentDate(service);
-        assertThrows(NotFoundException.class, () -> service.update(created, LocalTime.of(10, 0), ADMIN_ID));
+        assertThrows(NotFoundException.class, () -> service.update(getUpdated(), LocalTime.of(10, 0), ADMIN_ID));
     }
 
     @Test
