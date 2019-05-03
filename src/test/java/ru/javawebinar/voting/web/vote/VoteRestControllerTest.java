@@ -1,4 +1,4 @@
-package ru.javawebinar.voting.web;
+package ru.javawebinar.voting.web.vote;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +7,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import ru.javawebinar.voting.RestaurantTestData;
 import ru.javawebinar.voting.model.Vote;
 import ru.javawebinar.voting.service.VoteService;
+import ru.javawebinar.voting.web.AbstractControllerTest;
 import ru.javawebinar.voting.web.json.JsonUtil;
 
 import java.time.LocalDate;
@@ -21,6 +22,7 @@ import static ru.javawebinar.voting.RestaurantTestData.RESTAURANT1;
 import static ru.javawebinar.voting.TestUtil.*;
 import static ru.javawebinar.voting.UserTestData.*;
 import static ru.javawebinar.voting.VoteTestData.assertMatch;
+import static ru.javawebinar.voting.VoteTestData.contentJson;
 import static ru.javawebinar.voting.VoteTestData.*;
 import static ru.javawebinar.voting.util.VotesUtil.getFilteredResults;
 

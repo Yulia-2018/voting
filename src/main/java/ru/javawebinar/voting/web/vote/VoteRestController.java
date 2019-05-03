@@ -1,4 +1,4 @@
-package ru.javawebinar.voting.web;
+package ru.javawebinar.voting.web.vote;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

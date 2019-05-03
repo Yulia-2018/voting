@@ -1,10 +1,11 @@
-package ru.javawebinar.voting.web;
+package ru.javawebinar.voting.web.dish;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.javawebinar.voting.model.Dish;
 import ru.javawebinar.voting.service.DishService;
+import ru.javawebinar.voting.web.SecurityUtil;
 
 import java.time.LocalDate;
 import java.util.List;

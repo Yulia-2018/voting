@@ -1,4 +1,4 @@
-package ru.javawebinar.voting.web;
+package ru.javawebinar.voting.web.vote;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.javawebinar.voting.model.Vote;
 import ru.javawebinar.voting.service.VoteService;
 import ru.javawebinar.voting.to.ResultVote;
+import ru.javawebinar.voting.web.SecurityUtil;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
