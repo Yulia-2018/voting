@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static ru.javawebinar.voting.UserTestData.*;
 
 @SpringJUnitConfig(locations = {
@@ -37,7 +37,7 @@ class UserServiceTest {
     }
 
     @Test
-    void duplicateMailCreate() {
+    void createDuplicate() {
         assertThrows(DataAccessException.class, () -> service.create(new User(null, "Duplicate", "user@yandex.ru", "newPass", Role.ROLE_USER)));
     }
 
@@ -48,6 +48,13 @@ class UserServiceTest {
         updated.setRoles(Collections.singletonList(Role.ROLE_ADMIN));
         service.update(updated);
         assertMatch(service.get(USER_ID), updated);
+    }
+
+    @Test
+    void updateDuplicate() {
+        User updated = new User(USER);
+        updated.setEmail("admin@gmail.com");
+        assertThrows(DataAccessException.class, () -> service.update(updated));
     }
 
     @Test
@@ -87,5 +94,13 @@ class UserServiceTest {
     void getAll() {
         List<User> all = service.getAll();
         assertMatch(all, ADMIN, USER);
+    }
+
+    @Test
+    void enable() {
+        service.enable(USER_ID, false);
+        assertFalse(service.get(USER_ID).isEnabled());
+        service.enable(USER_ID, true);
+        assertTrue(service.get(USER_ID).isEnabled());
     }
 }

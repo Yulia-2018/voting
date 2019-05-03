@@ -1,11 +1,15 @@
 package ru.javawebinar.voting;
 
+import org.springframework.test.web.servlet.ResultMatcher;
 import ru.javawebinar.voting.model.Role;
 import ru.javawebinar.voting.model.User;
+import ru.javawebinar.voting.web.json.JsonUtil;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static ru.javawebinar.voting.TestUtil.readFromJsonMvcResult;
+import static ru.javawebinar.voting.TestUtil.readListFromJsonMvcResult;
 import static ru.javawebinar.voting.model.AbstractBaseEntity.START_SEQ;
 
 public class UserTestData {
@@ -25,5 +29,17 @@ public class UserTestData {
 
     public static void assertMatch(Iterable<User> actual, Iterable<User> expected) {
         assertThat(actual).usingElementComparatorIgnoringFields("registered", "password").isEqualTo(expected);
+    }
+
+    public static ResultMatcher contentJson(User... expected) {
+        return result -> assertMatch(readListFromJsonMvcResult(result, User.class), List.of(expected));
+    }
+
+    public static ResultMatcher contentJson(User expected) {
+        return result -> assertMatch(readFromJsonMvcResult(result, User.class), expected);
+    }
+
+    public static String jsonWithPassword(User user, String passw) {
+        return JsonUtil.writeAdditionProps(user, "password", passw);
     }
 }

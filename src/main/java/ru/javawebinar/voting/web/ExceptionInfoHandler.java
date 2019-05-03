@@ -2,6 +2,7 @@ package ru.javawebinar.voting.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,12 +24,14 @@ import ru.javawebinar.voting.util.exception.ErrorInfo;
 import ru.javawebinar.voting.util.exception.IllegalRequestDataException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Objects;
 
 @RestControllerAdvice(annotations = RestController.class)
 @Order(Ordered.HIGHEST_PRECEDENCE + 5)
 public class ExceptionInfoHandler {
     private static Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
+
+    @Autowired
+    private MessageUtil messageUtil;
 
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<ErrorInfo> applicationError(HttpServletRequest req, ApplicationException appEx) {
@@ -49,10 +52,7 @@ public class ExceptionInfoHandler {
                 ((BindException) e).getBindingResult() : ((MethodArgumentNotValidException) e).getBindingResult();
 
         String[] details = result.getFieldErrors().stream()
-                .map(fe -> {
-                    String msg = fe.getDefaultMessage();
-                    return msg == null ? null : (msg.startsWith(fe.getField())) ? msg : fe.getField() + ' ' + msg;
-                }).filter(Objects::nonNull)
+                .map(fe -> (messageUtil.getMessage(fe).contains(fe.getField())) ? messageUtil.getMessage(fe) : fe.getField() + " " + messageUtil.getMessage(fe))
                 .toArray(String[]::new);
 
         return logAndGetErrorInfo(req, e, false, details);
