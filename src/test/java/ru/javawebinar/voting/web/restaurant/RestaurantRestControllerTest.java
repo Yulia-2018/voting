@@ -34,7 +34,8 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(created))
                 .with(userHttpBasic(ADMIN)))
-                .andDo(print());
+                .andDo(print())
+                .andExpect(status().isCreated());
 
         Restaurant returned = readFromJson(action, Restaurant.class);
         created.setId(returned.getId());
