@@ -7,6 +7,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.voting.model.Dish;
+import ru.javawebinar.voting.to.DishTo;
+import ru.javawebinar.voting.util.DishUtil;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -20,8 +22,8 @@ public class DishRestController extends AbstractDishController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Dish> createWithLocation(@Valid @RequestBody Dish dish, @RequestParam int restaurantId) {
-        Dish created = super.create(dish, restaurantId);
+    public ResponseEntity<Dish> createWithLocation(@Valid @RequestBody DishTo dishTo, @RequestParam int restaurantId) {
+        Dish created = super.create(DishUtil.createNewFromTo(dishTo), restaurantId);
 
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}").query("restaurantId=" + restaurantId)
@@ -34,8 +36,8 @@ public class DishRestController extends AbstractDishController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody Dish dish, @PathVariable int id, @RequestParam int restaurantId) {
-        super.update(dish, id, restaurantId);
+    public void update(@Valid @RequestBody DishTo dishTo, @PathVariable int id, @RequestParam int restaurantId) {
+        super.update(dishTo, id, restaurantId);
     }
 
     @Override

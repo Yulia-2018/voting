@@ -3,7 +3,6 @@ package ru.javawebinar.voting.model;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Range;
-import ru.javawebinar.voting.View;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -32,7 +31,7 @@ public class Dish extends AbstractNamedEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @NotNull(groups = View.Persist.class)
+    @NotNull
     private Restaurant restaurant;
 
     public Dish() {

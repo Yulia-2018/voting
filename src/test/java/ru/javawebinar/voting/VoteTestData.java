@@ -17,7 +17,7 @@ import static ru.javawebinar.voting.model.AbstractBaseEntity.START_SEQ;
 
 public class VoteTestData {
 
-    public static final int VOTE1_ID = START_SEQ + 12;
+    public static final int VOTE1_ID = START_SEQ + 13;
 
     public static final Vote VOTE1_USER = new Vote(VOTE1_ID, LocalDate.of(2019, 1, 1), USER, RESTAURANT1);
     public static final Vote VOTE1_ADMIN = new Vote(VOTE1_ID + 1, LocalDate.of(2019, 1, 1), ADMIN, RESTAURANT1);

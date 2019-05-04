@@ -57,31 +57,31 @@
 #### get Dishes not found
 `curl -s http://localhost:8080/voting/rest/dishes/100004?restaurantId=100003 --user user@yandex.ru:password`
 
-#### delete Dishes
-`curl -s -X DELETE http://localhost:8080/voting/rest/dishes/100011?restaurantId=100003 --user admin@gmail.com:admin`
-
 #### create Dishes
-`curl -s -X POST -d '{"name":"Created dish","price":300,"date":"2019-03-15"}' -H 'Content-Type:application/json;charset=UTF-8' http://localhost:8080/voting/rest/dishes?restaurantId=100003 --user admin@gmail.com:admin`
+`curl -s -X POST -d '{"name":"Created dish","price":300}' -H 'Content-Type:application/json;charset=UTF-8' http://localhost:8080/voting/rest/dishes?restaurantId=100003 --user admin@gmail.com:admin`
 
 #### update Dishes
-`curl -s -X PUT -d '{"name":"Updated dish","price":300,"date":"2019-04-01"}' -H 'Content-Type: application/json' http://localhost:8080/voting/rest/dishes/100008?restaurantId=100003 --user admin@gmail.com:admin`
+`curl -s -X PUT -d '{"name":"Updated dish","price":300}' -H 'Content-Type: application/json' http://localhost:8080/voting/rest/dishes/100012?restaurantId=100002 --user admin@gmail.com:admin`
+
+#### delete Dishes
+`curl -s -X DELETE http://localhost:8080/voting/rest/dishes/100012?restaurantId=100002 --user admin@gmail.com:admin`
 
 ### Votes
 #### get All Results
 `curl -s "http://localhost:8080/voting/rest/votes?date=2019-02-01" --user user@yandex.ru:password`
 
-#### get Votes 100015
-`curl -s http://localhost:8080/voting/rest/votes/100015 --user admin@gmail.com:admin`
+#### get Votes 100016
+`curl -s http://localhost:8080/voting/rest/votes/100016 --user admin@gmail.com:admin`
 
 #### get Votes not found
-`curl -s http://localhost:8080/voting/rest/votes/100015 --user user@yandex.ru:password`
+`curl -s http://localhost:8080/voting/rest/votes/100016 --user user@yandex.ru:password`
 
 #### create Votes
 `curl -s -X POST -d '{}' -H 'Content-Type:application/json;charset=UTF-8' http://localhost:8080/voting/rest/votes?restaurantId=100003 --user admin@gmail.com:admin`
 
 #### update Votes
-`curl -s -X PUT -d '{}' -H 'Content-Type: application/json' http://localhost:8080/voting/rest/votes/100016?restaurantId=100002 --user user@yandex.ru:password`
+`curl -s -X PUT -d '{}' -H 'Content-Type: application/json' http://localhost:8080/voting/rest/votes/100017?restaurantId=100002 --user user@yandex.ru:password`
 
 #### validate with Error
 `curl -s -X PUT -d '{}' -H 'Content-Type: application/json' http://localhost:8080/voting/rest/dishes/100008?restaurantId=100003 --user admin@gmail.com:admin`
-`curl -s -X PUT -d '{"date":"2019-03-01"}' -H 'Content-Type: application/json' http://localhost:8080/voting/rest/votes/100016?restaurantId=100002 --user user@yandex.ru:password`
+`curl -s -X PUT -d '{"date":"2019-03-01"}' -H 'Content-Type: application/json' http://localhost:8080/voting/rest/votes/100017?restaurantId=100002 --user user@yandex.ru:password`

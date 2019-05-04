@@ -6,13 +6,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.javawebinar.voting.DishTestData;
 import ru.javawebinar.voting.model.Dish;
 import ru.javawebinar.voting.service.DishService;
+import ru.javawebinar.voting.to.DishTo;
+import ru.javawebinar.voting.util.DishUtil;
 import ru.javawebinar.voting.web.AbstractControllerTest;
 import ru.javawebinar.voting.web.json.JsonUtil;
 
-import java.time.LocalDate;
+import java.util.Collections;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -34,27 +35,29 @@ class DishRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testCreate() throws Exception {
-        Dish created = DishTestData.getCreated();
+        DishTo createdTo = getCreatedTo();
         ResultActions action = mockMvc.perform(post(REST_URL + "?restaurantId=" + RESTAURANT1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(created))
+                .content(JsonUtil.writeValue(createdTo))
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isCreated());
 
         Dish returned = readFromJson(action, Dish.class);
+
+        Dish created = DishUtil.createNewFromTo(createdTo);
         created.setId(returned.getId());
 
         assertMatch(returned, created);
-        assertMatch(service.getAll(RESTAURANT1_ID, LocalDate.of(2019, 1, 1)), DISH1_1, created, DISH1_2);
+        assertMatch(service.getAll(RESTAURANT1_ID, created.getDate()), DISH_FOR_CURRENT_DATE, created);
     }
 
     @Test
     void testCreateForbidden() throws Exception {
-        Dish created = DishTestData.getCreated();
+        DishTo createdTo = getCreatedTo();
         mockMvc.perform(post(REST_URL + "?restaurantId=" + RESTAURANT1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(created))
+                .content(JsonUtil.writeValue(createdTo))
                 .with(userHttpBasic(USER)))
                 .andDo(print())
                 .andExpect(status().isForbidden())
@@ -63,10 +66,10 @@ class DishRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testCreateInvalid() throws Exception {
-        Dish created = new Dish(null, "   ", 0, null);
+        DishTo createdTo = new DishTo(null, "   ", 0);
         mockMvc.perform(post(REST_URL + "?restaurantId=" + RESTAURANT1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(created))
+                .content(JsonUtil.writeValue(createdTo))
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity());
@@ -75,10 +78,10 @@ class DishRestControllerTest extends AbstractControllerTest {
     @Test
     @Transactional(propagation = Propagation.NEVER)
     void testCreateDuplicateRestaurantDateName() throws Exception {
-        Dish created = new Dish(null, "Картошечка", 550, LocalDate.of(2019, 1, 1));
+        DishTo createdTo = new DishTo(null, "Минтай", 380);
         mockMvc.perform(post(REST_URL + "?restaurantId=" + RESTAURANT1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(created))
+                .content(JsonUtil.writeValue(createdTo))
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isConflict());
@@ -86,23 +89,35 @@ class DishRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testUpdate() throws Exception {
-        Dish updated = DishTestData.getUpdated();
+        DishTo updatedTo = getUpdatedTo();
 
-        mockMvc.perform(put(REST_URL + DISH1_ID + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(updated))
+        mockMvc.perform(put(REST_URL + DISH_ID_FOR_CURRENT_DATE + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updatedTo))
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        assertMatch(service.get(DISH1_ID, RESTAURANT1_ID), updated);
+        assertMatch(service.get(DISH_ID_FOR_CURRENT_DATE, RESTAURANT1_ID), DishUtil.updateFromTo(new Dish(DISH_FOR_CURRENT_DATE), updatedTo));
+    }
+
+    @Test
+    void testUpdateInvalidDate() throws Exception {
+        DishTo updatedTo = new DishTo(DISH1_ID, "Обновленное блюдо", 150);
+
+        mockMvc.perform(put(REST_URL + DISH1_ID + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updatedTo))
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(detailMessage("It is forbidden to update historical data (" + DISH1_1.getDate() +")"));
     }
 
     @Test
     void testUpdateForbidden() throws Exception {
-        Dish updated = DishTestData.getUpdated();
+        DishTo updatedTo = getUpdatedTo();
 
-        mockMvc.perform(put(REST_URL + DISH1_ID + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(updated))
+        mockMvc.perform(put(REST_URL + DISH_ID_FOR_CURRENT_DATE + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updatedTo))
                 .with(userHttpBasic(USER)))
                 .andDo(print())
                 .andExpect(status().isForbidden())
@@ -111,16 +126,16 @@ class DishRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testUpdateInvalid() throws Exception {
-        Dish updated = new Dish(DISH1_ID, "Б", 150000, LocalDate.of(2019, 1, 1));
+        DishTo updatedTo = new DishTo(DISH_ID_FOR_CURRENT_DATE, "   ", 0);
 
-        mockMvc.perform(put(REST_URL + DISH1_ID + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(updated))
+        mockMvc.perform(put(REST_URL + DISH_ID_FOR_CURRENT_DATE + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updatedTo))
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity());
     }
 
-    @Test
+    /*@Test
     @Transactional(propagation = Propagation.NEVER)
     void testUpdateDuplicateRestaurantDateName() throws Exception {
         Dish updated = new Dish(DISH1_ID, "Шашлычок", 100, LocalDate.of(2019, 1, 1));
@@ -129,27 +144,36 @@ class DishRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isConflict());
-    }
+    }*/
 
     @Test
     void testUpdateNotFound() throws Exception {
-        Dish updated = DishTestData.getUpdated();
+        DishTo updatedTo = getUpdatedTo();
 
-        mockMvc.perform(put(REST_URL + DISH1_ID + "?restaurantId=" + RESTAURANT2_ID).contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(updated))
+        mockMvc.perform(put(REST_URL + DISH_ID_FOR_CURRENT_DATE + "?restaurantId=" + RESTAURANT2_ID).contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updatedTo))
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(detailMessage("Not found entity with id=" + DISH1_ID));
+                .andExpect(detailMessage("Not found entity with id=" + DISH_ID_FOR_CURRENT_DATE));
     }
 
     @Test
     void testDelete() throws Exception {
-        mockMvc.perform(delete(REST_URL + DISH2_ID + "?restaurantId=" + RESTAURANT2_ID)
+        mockMvc.perform(delete(REST_URL + DISH_ID_FOR_CURRENT_DATE + "?restaurantId=" + RESTAURANT1_ID)
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        assertMatch(service.getAll(RESTAURANT2_ID, LocalDate.of(2019, 1, 1)), DISH2_2);
+        assertMatch(service.getAll(RESTAURANT1_ID, DISH_FOR_CURRENT_DATE.getDate()), Collections.emptyList());
+    }
+
+    @Test
+    void testDeleteInvalidDate() throws Exception {
+        mockMvc.perform(delete(REST_URL + DISH2_ID + "?restaurantId=" + RESTAURANT2_ID)
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(detailMessage("It is forbidden to update historical data (" + DISH2_1.getDate() +")"));;
     }
 
     @Test

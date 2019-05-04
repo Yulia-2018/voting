@@ -6,9 +6,13 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.javawebinar.voting.model.Dish;
+import ru.javawebinar.voting.to.DishTo;
+import ru.javawebinar.voting.util.DishUtil;
+import ru.javawebinar.voting.util.exception.InvalidDateTimeException;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
 import java.time.LocalDate;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static ru.javawebinar.voting.DishTestData.*;
@@ -27,33 +31,42 @@ class DishServiceTest {
 
     @Test
     void create() {
-        LocalDate date = LocalDate.of(2019, 2, 1);
-        Dish newDish = new Dish(null, "Новая еда", 350, date);
+        DishTo createdTo = getCreatedTo();
+        Dish newDish = DishUtil.createNewFromTo(createdTo);
         Dish created = service.create(newDish, RESTAURANT1_ID);
         newDish.setId(created.getId());
         assertMatch(newDish, created);
-        assertMatch(service.getAll(RESTAURANT1_ID, date), DISH1_3, newDish, DISH1_4);
+        assertMatch(service.getAll(RESTAURANT1_ID, created.getDate()), DISH_FOR_CURRENT_DATE, created);
     }
 
     @Test
     void update() {
-        Dish updated = new Dish(DISH2_1);
-        updated.setName("UpdatedName");
-        service.update(updated, RESTAURANT2_ID);
-        assertMatch(service.get(DISH2_ID, RESTAURANT2_ID), updated);
+        DishTo updatedTo = getUpdatedTo();
+        service.update(updatedTo, RESTAURANT1_ID);
+        assertMatch(service.get(DISH_ID_FOR_CURRENT_DATE, RESTAURANT1_ID), DishUtil.updateFromTo(new Dish(DISH_FOR_CURRENT_DATE), updatedTo));
+    }
+
+    @Test
+    void updateInvalidDate() {
+        DishTo updatedTo = new DishTo(DISH1_ID, "Обновленное блюдо", 150);
+        assertThrows(InvalidDateTimeException.class, () -> service.update(updatedTo, RESTAURANT1_ID));
     }
 
     @Test
     void updateNotFound() {
-        Dish updated = new Dish(DISH2_1);
-        updated.setName("UpdatedName");
-        assertThrows(NotFoundException.class, () -> service.update(updated, RESTAURANT1_ID));
+        DishTo updatedTo = getUpdatedTo();
+        assertThrows(NotFoundException.class, () -> service.update(updatedTo, RESTAURANT2_ID));
     }
 
     @Test
     void delete() {
-        service.delete(DISH1_ID, RESTAURANT1_ID);
-        assertMatch(service.getAll(RESTAURANT1_ID, DISH1_1.getDate()), DISH1_2);
+        service.delete(DISH_ID_FOR_CURRENT_DATE, RESTAURANT1_ID);
+        assertMatch(service.getAll(RESTAURANT1_ID, DISH_FOR_CURRENT_DATE.getDate()), Collections.emptyList());
+    }
+
+    @Test
+    void deleteInvalidDate() {
+        assertThrows(InvalidDateTimeException.class, () -> service.delete(DISH1_ID, RESTAURANT1_ID));
     }
 
     @Test

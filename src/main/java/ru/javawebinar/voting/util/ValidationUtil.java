@@ -62,6 +62,12 @@ public class ValidationUtil {
         }
     }
 
+    public static void checkCurrentDate(LocalDate date) {
+        if (date.compareTo(LocalDate.now()) != 0) {
+            throw new InvalidDateTimeException("It is forbidden to update historical data (" + date + ")");
+        }
+    }
+
     //  http://stackoverflow.com/a/28565320/548473
     public static Throwable getRootCause(Throwable t) {
         Throwable result = t;

@@ -42,8 +42,7 @@ public class VoteServiceImpl implements VoteService {
         }
         int id = vote.getId();
         LocalDate date = vote.getDate();
-        Vote voteInDb = repository.get(id, userId);
-        checkNotFoundWithId(voteInDb, id);
+        Vote voteInDb = get(id, userId);
         checkInvalidDate(date, voteInDb.getDate());
         checkInvalidDateTime(date, time);
         repository.save(vote, userId, restaurantId);

@@ -2,6 +2,7 @@ package ru.javawebinar.voting;
 
 import org.springframework.test.web.servlet.ResultMatcher;
 import ru.javawebinar.voting.model.Dish;
+import ru.javawebinar.voting.to.DishTo;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,12 +30,23 @@ public class DishTestData {
     public static final List<Dish> DISHES1 = List.of(DISH1_3, DISH1_4, DISH1_1, DISH1_2);
     public static final List<Dish> DISHES2 = List.of(DISH2_4, DISH2_3, DISH2_1, DISH2_2);
 
-    public static Dish getCreated() {
+    public static final int DISH_ID_FOR_CURRENT_DATE = START_SEQ + 12;
+    public static final Dish DISH_FOR_CURRENT_DATE = new Dish(DISH_ID_FOR_CURRENT_DATE, "Минтай", 380, LocalDate.now(), RESTAURANT1);
+
+    /*public static Dish getCreated() {
         return new Dish(null, "Новое блюдо", 380, LocalDate.of(2019, 1, 1));
     }
 
     public static Dish getUpdated() {
         return new Dish(DISH1_ID, "Обновленное блюдо", 150, LocalDate.of(2019, 1, 1));
+    }*/
+
+    public static DishTo getCreatedTo() {
+        return new DishTo(null, "Новое блюдо", 380);
+    }
+
+    public static DishTo getUpdatedTo() {
+        return new DishTo(DISH_ID_FOR_CURRENT_DATE, "Обновленное блюдо", 150);
     }
 
     public static void assertMatch(Dish actual, Dish expected) {
