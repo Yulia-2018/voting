@@ -2,6 +2,7 @@ package ru.javawebinar.voting.repository.jpa;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import ru.javawebinar.voting.model.Restaurant;
 import ru.javawebinar.voting.model.User;
 import ru.javawebinar.voting.model.Vote;
 import ru.javawebinar.voting.repository.VoteRepository;
@@ -18,12 +19,13 @@ public class VoteRepositoryImpl implements VoteRepository {
     @PersistenceContext
     private EntityManager em;
 
-    // Возможно, что в save нужно еще передавать параметр "int restaurantId"
     @Override
     @Transactional
-    public Vote save(Vote vote, int userId) {
+    public Vote save(Vote vote, int userId, int restaurantId) {
         User refUser = em.getReference(User.class, userId);
         vote.setUser(refUser);
+        Restaurant refRestaurant = em.getReference(Restaurant.class, restaurantId);
+        vote.setRestaurant(refRestaurant);
         if (vote.isNew()) {
             em.persist(vote);
             return vote;

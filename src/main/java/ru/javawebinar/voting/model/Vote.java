@@ -24,7 +24,7 @@ public class Vote extends AbstractBaseEntity {
     //public static final String RESULT = "Vote.getResult";
 
     @Column(name = "date", nullable = false, columnDefinition = "DATE default now()")
-    @NotNull
+    @NotNull(groups = View.Persist.class)
     private LocalDate date;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,7 +37,7 @@ public class Vote extends AbstractBaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "restaurant_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @NotNull
+    @NotNull(groups = View.Persist.class)
     private Restaurant restaurant;
 
     public Vote() {

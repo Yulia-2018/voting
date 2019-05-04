@@ -22,6 +22,7 @@ public class Dish extends AbstractNamedEntity {
 
     @Column(name = "price", nullable = false)
     @Range(min = 1, max = 100000)
+    @NotNull
     private Integer price;
 
     @Column(name = "date", nullable = false, columnDefinition = "DATE default now()")

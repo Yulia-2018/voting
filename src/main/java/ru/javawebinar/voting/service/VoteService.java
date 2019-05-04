@@ -9,9 +9,9 @@ import java.time.LocalTime;
 import java.util.List;
 
 public interface VoteService {
-    Vote create(Vote vote, LocalTime time, int userId) throws InvalidDateTimeException;
+    Vote create(Vote vote, LocalTime time, int userId, int restaurantId) throws InvalidDateTimeException;
 
-    void update(Vote vote, LocalTime time, int userId) throws NotFoundException, InvalidDateTimeException;
+    void update(Vote vote, LocalTime time, int userId, int restaurantId) throws NotFoundException, InvalidDateTimeException;
 
     Vote get(int id, int userId) throws NotFoundException;
 
