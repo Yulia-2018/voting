@@ -16,7 +16,6 @@ public class Restaurant extends AbstractNamedEntity {
 
     // Поставила LAZY
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
-    @OrderBy("date DESC, name")
     private List<Dish> dishes;
 
     public Restaurant() {

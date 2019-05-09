@@ -25,7 +25,7 @@ import static ru.javawebinar.voting.UserTestData.*;
 import static ru.javawebinar.voting.VoteTestData.assertMatch;
 import static ru.javawebinar.voting.VoteTestData.contentJson;
 import static ru.javawebinar.voting.VoteTestData.*;
-import static ru.javawebinar.voting.util.VotesUtil.getFilteredResults;
+import static ru.javawebinar.voting.util.VotesUtil.getResultsVoting;
 
 class VoteRestControllerTest extends AbstractControllerTest {
 
@@ -194,6 +194,6 @@ class VoteRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(contentJson(getFilteredResults(service.getAll(date), date)));
+                .andExpect(contentJson(getResultsVoting(service.getAll(date), date)));
     }
 }

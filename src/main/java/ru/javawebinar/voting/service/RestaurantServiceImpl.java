@@ -7,6 +7,7 @@ import ru.javawebinar.voting.model.Restaurant;
 import ru.javawebinar.voting.repository.RestaurantRepository;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static ru.javawebinar.voting.util.ValidationUtil.checkNotFoundWithId;
@@ -46,5 +47,10 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public List<Restaurant> getAll() {
         return repository.getAll();
+    }
+
+    @Override
+    public List<Restaurant> getAllWithDishes(LocalDate date) {
+        return repository.getAllWithDishes(date);
     }
 }

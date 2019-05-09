@@ -2,7 +2,7 @@ package ru.javawebinar.voting.to;
 
 import java.time.LocalDate;
 
-public class ResultVote extends BaseTo {
+public class ResultsVoting extends BaseTo {
 
     private String name;
 
@@ -10,10 +10,10 @@ public class ResultVote extends BaseTo {
 
     private int quantity;
 
-    public ResultVote() {
+    public ResultsVoting() {
     }
 
-    public ResultVote(Integer id, String name, LocalDate date, int quantity) {
+    public ResultsVoting(Integer id, String name, LocalDate date, int quantity) {
         super(id);
         this.name = name;
         this.date = date;
@@ -37,7 +37,7 @@ public class ResultVote extends BaseTo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ResultVote that = (ResultVote) o;
+        ResultsVoting that = (ResultsVoting) o;
 
         if (quantity != that.quantity) return false;
         if (!id.equals(that.id)) return false;
@@ -56,7 +56,7 @@ public class ResultVote extends BaseTo {
 
     @Override
     public String toString() {
-        return "ResultVote{" +
+        return "ResultsVoting{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", date=" + date +

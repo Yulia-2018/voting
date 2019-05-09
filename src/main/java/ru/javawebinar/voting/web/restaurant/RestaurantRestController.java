@@ -7,9 +7,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.voting.model.Restaurant;
+import ru.javawebinar.voting.to.RestaurantsWithDishes;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -55,5 +57,13 @@ public class RestaurantRestController extends AbstractRestaurantController {
     @GetMapping
     public List<Restaurant> getAll() {
         return super.getAll();
+    }
+
+
+    // Подумать, про @RequestParam(required = false) у date
+    @Override
+    @GetMapping("/withDishes")
+    public List<RestaurantsWithDishes> getAllWithDishes(@RequestParam LocalDate date) {
+        return super.getAllWithDishes(date);
     }
 }

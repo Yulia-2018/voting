@@ -11,6 +11,8 @@ import ru.javawebinar.voting.service.RestaurantService;
 import ru.javawebinar.voting.web.AbstractControllerTest;
 import ru.javawebinar.voting.web.json.JsonUtil;
 
+import java.time.LocalDate;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -19,6 +21,7 @@ import static ru.javawebinar.voting.RestaurantTestData.*;
 import static ru.javawebinar.voting.TestUtil.*;
 import static ru.javawebinar.voting.UserTestData.ADMIN;
 import static ru.javawebinar.voting.UserTestData.USER;
+import static ru.javawebinar.voting.util.RestaurantsWithDishesUtil.getRestaurantsWithDishes;
 
 class RestaurantRestControllerTest extends AbstractControllerTest {
 
@@ -187,5 +190,16 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(contentJson(RESTAURANT2, RESTAURANT1));
+    }
+
+    @Test
+    void testGetAllWithDishes() throws Exception {
+        LocalDate date = LocalDate.of(2019, 2, 1);
+        mockMvc.perform(get(REST_URL + "withDishes").param("date", date.toString())
+                .with(userHttpBasic(USER)))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(contentJson(getRestaurantsWithDishes(service.getAllWithDishes(date), date)));
     }
 }

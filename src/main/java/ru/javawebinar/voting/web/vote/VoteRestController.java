@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.voting.model.Vote;
-import ru.javawebinar.voting.to.ResultVote;
+import ru.javawebinar.voting.to.ResultsVoting;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -45,7 +45,7 @@ public class VoteRestController extends AbstractVoteController {
     // Подумать, про @RequestParam(required = false) у date
     @Override
     @GetMapping
-    public List<ResultVote> getResult(@RequestParam LocalDate date) {
-        return super.getResult(date);
+    public List<ResultsVoting> getResults(@RequestParam LocalDate date) {
+        return super.getResults(date);
     }
 }

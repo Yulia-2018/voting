@@ -6,7 +6,7 @@
 
     <import resource="spring-security.xml"/>
 
-    <context:component-scan base-package="ru.javawebinar.**.repository"/>
+    <context:component-scan base-package="ru.javawebinar.**.repository.datajpa"/>
 
     <context:component-scan base-package="ru.javawebinar.**.service"/>
 

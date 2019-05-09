@@ -2,7 +2,7 @@ package ru.javawebinar.voting;
 
 import org.springframework.test.web.servlet.ResultMatcher;
 import ru.javawebinar.voting.model.Vote;
-import ru.javawebinar.voting.to.ResultVote;
+import ru.javawebinar.voting.to.ResultsVoting;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -47,7 +47,7 @@ public class VoteTestData {
         assertThat(actual).usingElementComparatorIgnoringFields("user", "restaurant").isEqualTo(expected);
     }
 
-    public static ResultMatcher contentJson(Iterable<ResultVote> expected) {
-        return result -> assertThat(readListFromJsonMvcResult(result, ResultVote.class)).isEqualTo(expected);
+    public static ResultMatcher contentJson(Iterable<ResultsVoting> expected) {
+        return result -> assertThat(readListFromJsonMvcResult(result, ResultsVoting.class)).isEqualTo(expected);
     }
 }

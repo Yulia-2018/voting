@@ -32,6 +32,9 @@
 #### get All Restaurants
 `curl -s http://localhost:8080/voting/rest/restaurants --user user@yandex.ru:password`
 
+#### get All Restaurants With Dishes
+`curl -s http://localhost:8080/voting/rest/restaurants/withDishes?date=2019-01-01 --user user@yandex.ru:password`
+
 #### get Restaurants 100003
 `curl -s http://localhost:8080/voting/rest/restaurants/100003 --user user@yandex.ru:password`
 
@@ -67,7 +70,7 @@
 `curl -s -X DELETE http://localhost:8080/voting/rest/dishes/100012?restaurantId=100002 --user admin@gmail.com:admin`
 
 ### Votes
-#### get All Results
+#### get All Results Voting
 `curl -s "http://localhost:8080/voting/rest/votes?date=2019-02-01" --user user@yandex.ru:password`
 
 #### get Votes 100016

@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.javawebinar.voting.model.Vote;
 import ru.javawebinar.voting.service.VoteService;
-import ru.javawebinar.voting.to.ResultVote;
+import ru.javawebinar.voting.to.ResultsVoting;
 import ru.javawebinar.voting.web.SecurityUtil;
 
 import java.time.LocalDate;
@@ -14,7 +14,7 @@ import java.util.List;
 
 import static ru.javawebinar.voting.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.voting.util.ValidationUtil.checkNew;
-import static ru.javawebinar.voting.util.VotesUtil.getFilteredResults;
+import static ru.javawebinar.voting.util.VotesUtil.getResultsVoting;
 
 public abstract class AbstractVoteController {
     private static final Logger log = LoggerFactory.getLogger(VoteRestController.class);
@@ -48,10 +48,10 @@ public abstract class AbstractVoteController {
         return service.get(id, userId);
     }
 
-    public List<ResultVote> getResult(LocalDate date) {
+    public List<ResultsVoting> getResults(LocalDate date) {
         int userId = SecurityUtil.authUserId();
-        log.info("user {} getResult vote", userId);
+        log.info("user {} getResultsVoting by {}", userId, date);
         List<Vote> votes = service.getAll(date);
-        return getFilteredResults(votes, date);
+        return getResultsVoting(votes, date);
     }
 }

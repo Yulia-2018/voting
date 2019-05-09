@@ -2,6 +2,7 @@ package ru.javawebinar.voting;
 
 import org.springframework.test.web.servlet.ResultMatcher;
 import ru.javawebinar.voting.model.Restaurant;
+import ru.javawebinar.voting.to.RestaurantsWithDishes;
 
 import java.util.List;
 
@@ -42,5 +43,9 @@ public class RestaurantTestData {
 
     public static ResultMatcher contentJson(Restaurant... expected) {
         return result -> assertMatch(readListFromJsonMvcResult(result, Restaurant.class), List.of(expected));
+    }
+
+    public static ResultMatcher contentJson(Iterable<RestaurantsWithDishes> expected) {
+        return result -> assertThat(readListFromJsonMvcResult(result, RestaurantsWithDishes.class)).isEqualTo(expected);
     }
 }

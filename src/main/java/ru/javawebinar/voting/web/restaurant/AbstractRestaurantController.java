@@ -5,10 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.javawebinar.voting.model.Restaurant;
 import ru.javawebinar.voting.service.RestaurantService;
+import ru.javawebinar.voting.to.RestaurantsWithDishes;
 import ru.javawebinar.voting.web.SecurityUtil;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import static ru.javawebinar.voting.util.RestaurantsWithDishesUtil.getRestaurantsWithDishes;
 import static ru.javawebinar.voting.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.voting.util.ValidationUtil.checkNew;
 
@@ -48,5 +51,12 @@ public abstract class AbstractRestaurantController {
         int userId = SecurityUtil.authUserId();
         log.info("user {} getAll restaurant", userId);
         return service.getAll();
+    }
+
+    public List<RestaurantsWithDishes> getAllWithDishes(LocalDate date) {
+        int userId = SecurityUtil.authUserId();
+        log.info("user {} getRestaurantsWithDishes by {}", userId, date);
+        List<Restaurant> restaurants = service.getAllWithDishes(date);
+        return getRestaurantsWithDishes(restaurants, date);
     }
 }

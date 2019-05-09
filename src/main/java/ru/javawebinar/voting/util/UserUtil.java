@@ -8,6 +8,9 @@ import ru.javawebinar.voting.to.UserTo;
 
 public class UserUtil {
 
+    private UserUtil() {
+    }
+
     public static User createNewFromTo(UserTo newUser) {
         return new User(null, newUser.getName(), newUser.getEmail().toLowerCase(), newUser.getPassword(), Role.ROLE_USER);
     }
