@@ -13,7 +13,7 @@ import static ru.javawebinar.voting.util.RestaurantUtil.asTo;
 public class VotesUtil {
 
     private static final Comparator<ResultsVoting> RESULTS_VOTING_COMPARATOR = Comparator
-            .comparing(ResultsVoting::getQuantity)
+            .comparing(ResultsVoting::getQuantity).reversed()
             .thenComparing((ResultsVoting resultsVoting) -> resultsVoting.getRestaurant().getName());
 
     private VotesUtil() {
