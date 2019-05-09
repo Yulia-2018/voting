@@ -2,9 +2,9 @@ package ru.javawebinar.voting.to;
 
 import java.time.LocalDate;
 
-public class ResultsVoting extends BaseTo {
+public class ResultsVoting {
 
-    private String name;
+    private RestaurantTo restaurant;
 
     private LocalDate date;
 
@@ -13,15 +13,14 @@ public class ResultsVoting extends BaseTo {
     public ResultsVoting() {
     }
 
-    public ResultsVoting(Integer id, String name, LocalDate date, int quantity) {
-        super(id);
-        this.name = name;
+    public ResultsVoting(RestaurantTo restaurant, LocalDate date, int quantity) {
+        this.restaurant = restaurant;
         this.date = date;
         this.quantity = quantity;
     }
 
-    public String getName() {
-        return name;
+    public RestaurantTo getRestaurant() {
+        return restaurant;
     }
 
     public LocalDate getDate() {
@@ -40,15 +39,13 @@ public class ResultsVoting extends BaseTo {
         ResultsVoting that = (ResultsVoting) o;
 
         if (quantity != that.quantity) return false;
-        if (!id.equals(that.id)) return false;
-        if (!name.equals(that.name)) return false;
+        if (!restaurant.equals(that.restaurant)) return false;
         return date.equals(that.date);
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + name.hashCode();
+        int result = restaurant.hashCode();
         result = 31 * result + date.hashCode();
         result = 31 * result + quantity;
         return result;
@@ -57,8 +54,7 @@ public class ResultsVoting extends BaseTo {
     @Override
     public String toString() {
         return "ResultsVoting{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+                "restaurant=" + restaurant +
                 ", date=" + date +
                 ", quantity=" + quantity +
                 '}';

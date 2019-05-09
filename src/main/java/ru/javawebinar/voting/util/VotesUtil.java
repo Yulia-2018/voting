@@ -8,11 +8,13 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.javawebinar.voting.util.RestaurantUtil.asTo;
+
 public class VotesUtil {
 
     private static final Comparator<ResultsVoting> RESULTS_VOTING_COMPARATOR = Comparator
             .comparing(ResultsVoting::getQuantity)
-            .thenComparing(ResultsVoting::getName);
+            .thenComparing((ResultsVoting resultsVoting) -> resultsVoting.getRestaurant().getName());
 
     private VotesUtil() {
     }
@@ -23,7 +25,7 @@ public class VotesUtil {
                         Collectors.groupingBy(Vote::getRestaurant, Collectors.counting())
                 );
         List<ResultsVoting> results = new ArrayList<>();
-        quantityByRestaurant.forEach((key, value) -> results.add(new ResultsVoting(key.getId(), key.getName(), date, value.intValue())));
+        quantityByRestaurant.forEach((key, value) -> results.add(new ResultsVoting(asTo(key), date, value.intValue())));
         results.sort(RESULTS_VOTING_COMPARATOR);
         return results;
     }
