@@ -42,7 +42,7 @@ public class VoteRepositoryImpl implements VoteRepository {
 
     @Override
     public List<Vote> getAll(LocalDate date) {
-        return em.createNamedQuery(Vote.ALL_SORTED, Vote.class)
+        return em.createNamedQuery(Vote.ALL, Vote.class)
                 .setParameter("date", date)
                 .getResultList();
     }

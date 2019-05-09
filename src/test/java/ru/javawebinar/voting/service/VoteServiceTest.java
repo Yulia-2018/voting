@@ -95,9 +95,4 @@ class VoteServiceTest {
     void getNotFound() {
         assertThrows(NotFoundException.class, () -> service.get(VOTE1_ID, ADMIN_ID));
     }
-
-    @Test
-    void getAll() {
-        assertMatch(service.getAll(LocalDate.of(2019, 2, 1)), VOTE2_ADMIN, VOTE2_USER);
-    }
 }
