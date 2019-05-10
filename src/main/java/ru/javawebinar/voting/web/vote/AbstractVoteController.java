@@ -9,7 +9,6 @@ import ru.javawebinar.voting.to.ResultsVoting;
 import ru.javawebinar.voting.web.SecurityUtil;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import static ru.javawebinar.voting.util.ValidationUtil.assureIdConsistent;
@@ -29,7 +28,7 @@ public abstract class AbstractVoteController {
         int userId = SecurityUtil.authUserId();
         checkNew(vote);
         log.info("user {} create {}", userId, vote);
-        return service.create(vote, LocalTime.now(), userId, restaurantId);
+        return service.create(vote, userId, restaurantId);
     }
 
     // При редактировании голоса мы скорее всего его будем получать как то так:
@@ -39,7 +38,7 @@ public abstract class AbstractVoteController {
         int userId = SecurityUtil.authUserId();
         assureIdConsistent(vote, id);
         log.info("user {} update {}", userId, vote);
-        service.update(vote, LocalTime.now(), userId, restaurantId);
+        service.update(vote, userId, restaurantId);
     }
 
     public Vote get(int id) {

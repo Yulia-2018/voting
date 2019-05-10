@@ -25,17 +25,17 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
-    public Vote create(Vote vote, LocalTime time, int userId, int restaurantId) throws InvalidDateTimeException {
+    public Vote create(Vote vote, int userId, int restaurantId) throws InvalidDateTimeException {
         Assert.notNull(vote, "vote must not be null");
         if (vote.getDate() == null) {
             vote.setDate(LocalDate.now());
         }
-        checkInvalidDateTime(vote.getDate(), time);
+        checkInvalidDateTime(vote.getDate(), LocalTime.now());
         return repository.save(vote, userId, restaurantId);
     }
 
     @Override
-    public void update(Vote vote, LocalTime time, int userId, int restaurantId) throws NotFoundException, InvalidDateTimeException {
+    public void update(Vote vote, int userId, int restaurantId) throws NotFoundException, InvalidDateTimeException {
         Assert.notNull(vote, "vote must not be null");
         if (vote.getDate() == null) {
             vote.setDate(LocalDate.now());
@@ -44,7 +44,7 @@ public class VoteServiceImpl implements VoteService {
         LocalDate date = vote.getDate();
         Vote voteInDb = get(id, userId);
         checkInvalidDate(date, voteInDb.getDate());
-        checkInvalidDateTime(date, time);
+        checkInvalidDateTime(date, LocalTime.now());
         repository.save(vote, userId, restaurantId);
     }
 
