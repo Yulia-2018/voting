@@ -1,7 +1,12 @@
 package ru.javawebinar.voting.to;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 public class RestaurantTo extends BaseTo {
 
+    @NotBlank
+    @Size(min = 2, max = 100)
     private String name;
 
     public RestaurantTo() {

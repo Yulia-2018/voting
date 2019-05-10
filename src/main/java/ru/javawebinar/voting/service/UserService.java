@@ -12,7 +12,7 @@ public interface UserService {
 
     void update(User user);
 
-    void update(UserTo user);
+    void update(UserTo userTo);
 
     User get(int id) throws NotFoundException;
 

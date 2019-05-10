@@ -2,14 +2,17 @@ package ru.javawebinar.voting.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import ru.javawebinar.voting.model.Restaurant;
 import ru.javawebinar.voting.repository.RestaurantRepository;
+import ru.javawebinar.voting.to.RestaurantTo;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
 
+import static ru.javawebinar.voting.util.RestaurantUtil.updateFromTo;
 import static ru.javawebinar.voting.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
@@ -28,9 +31,10 @@ public class RestaurantServiceImpl implements RestaurantService {
         return repository.save(restaurant);
     }
 
+    @Transactional
     @Override
-    public void update(Restaurant restaurant) {
-        Assert.notNull(restaurant, "restaurant must not be null");
+    public void update(RestaurantTo restaurantTo) {
+        Restaurant restaurant = updateFromTo(get(restaurantTo.getId()), restaurantTo);
         checkNotFoundWithId(repository.save(restaurant), restaurant.getId());
     }
 

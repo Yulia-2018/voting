@@ -6,12 +6,15 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.javawebinar.voting.model.Restaurant;
+import ru.javawebinar.voting.to.RestaurantTo;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static ru.javawebinar.voting.RestaurantTestData.*;
+import static ru.javawebinar.voting.util.RestaurantUtil.createNewFromTo;
+import static ru.javawebinar.voting.util.RestaurantUtil.updateFromTo;
 
 @SpringJUnitConfig(locations = {
         "classpath:spring/spring-app.xml",
@@ -25,19 +28,19 @@ class RestaurantServiceTest {
 
     @Test
     void create() {
-        Restaurant newRestaurant = new Restaurant(null, "Новый ресторан");
+        RestaurantTo createdTo = getCreatedTo();
+        Restaurant newRestaurant = createNewFromTo(createdTo);
         Restaurant created = service.create(newRestaurant);
         newRestaurant.setId(created.getId());
         assertMatch(newRestaurant, created);
-        assertMatch(service.getAll(), RESTAURANT2, newRestaurant, RESTAURANT1);
+        assertMatch(service.getAll(), RESTAURANT2, created, RESTAURANT1);
     }
 
     @Test
     void update() {
-        Restaurant updated = new Restaurant(RESTAURANT1);
-        updated.setName("UpdatedName");
-        service.update(updated);
-        assertMatch(service.get(RESTAURANT1_ID), updated);
+        RestaurantTo updatedTo = getUpdatedTo();
+        service.update(updatedTo);
+        assertMatch(service.get(RESTAURANT1_ID), updateFromTo(new Restaurant(RESTAURANT1), updatedTo));
     }
 
     @Test

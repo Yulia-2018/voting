@@ -5,7 +5,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import ru.javawebinar.voting.model.User;
 import ru.javawebinar.voting.to.UserTo;
-import ru.javawebinar.voting.util.UserUtil;
 import ru.javawebinar.voting.web.AbstractControllerTest;
 import ru.javawebinar.voting.web.json.JsonUtil;
 
@@ -16,6 +15,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.javawebinar.voting.TestUtil.readFromJson;
 import static ru.javawebinar.voting.TestUtil.userHttpBasic;
 import static ru.javawebinar.voting.UserTestData.*;
+import static ru.javawebinar.voting.util.UserUtil.createNewFromTo;
+import static ru.javawebinar.voting.util.UserUtil.updateFromTo;
 import static ru.javawebinar.voting.web.user.ProfileRestController.REST_URL;
 
 class ProfileRestControllerTest extends AbstractControllerTest {
@@ -30,7 +31,7 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isCreated());
         User returned = readFromJson(action, User.class);
 
-        User created = UserUtil.createNewFromTo(createdTo);
+        User created = createNewFromTo(createdTo);
         created.setId(returned.getId());
 
         assertMatch(returned, created);
@@ -68,7 +69,7 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        assertMatch(userService.getByEmail("newemail@ya.ru"), UserUtil.updateFromTo(new User(USER), updatedTo));
+        assertMatch(userService.getByEmail("newemail@ya.ru"), updateFromTo(new User(USER), updatedTo));
     }
 
     @Test

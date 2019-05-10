@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.voting.model.Dish;
 import ru.javawebinar.voting.service.DishService;
 import ru.javawebinar.voting.to.DishTo;
-import ru.javawebinar.voting.util.DishUtil;
 import ru.javawebinar.voting.web.AbstractControllerTest;
 import ru.javawebinar.voting.web.json.JsonUtil;
 
@@ -25,6 +24,8 @@ import static ru.javawebinar.voting.RestaurantTestData.RESTAURANT2_ID;
 import static ru.javawebinar.voting.TestUtil.*;
 import static ru.javawebinar.voting.UserTestData.ADMIN;
 import static ru.javawebinar.voting.UserTestData.USER;
+import static ru.javawebinar.voting.util.DishUtil.createNewFromTo;
+import static ru.javawebinar.voting.util.DishUtil.updateFromTo;
 
 class DishRestControllerTest extends AbstractControllerTest {
 
@@ -45,7 +46,7 @@ class DishRestControllerTest extends AbstractControllerTest {
 
         Dish returned = readFromJson(action, Dish.class);
 
-        Dish created = DishUtil.createNewFromTo(createdTo);
+        Dish created = createNewFromTo(createdTo);
         created.setId(returned.getId());
 
         assertMatch(returned, created);
@@ -97,7 +98,7 @@ class DishRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        assertMatch(service.get(DISH_ID_FOR_CURRENT_DATE, RESTAURANT1_ID), DishUtil.updateFromTo(new Dish(DISH_FOR_CURRENT_DATE), updatedTo));
+        assertMatch(service.get(DISH_ID_FOR_CURRENT_DATE, RESTAURANT1_ID), updateFromTo(new Dish(DISH_FOR_CURRENT_DATE), updatedTo));
     }
 
     @Test

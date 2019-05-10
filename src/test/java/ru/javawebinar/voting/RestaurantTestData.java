@@ -2,6 +2,7 @@ package ru.javawebinar.voting;
 
 import org.springframework.test.web.servlet.ResultMatcher;
 import ru.javawebinar.voting.model.Restaurant;
+import ru.javawebinar.voting.to.RestaurantTo;
 import ru.javawebinar.voting.to.RestaurantsWithDishes;
 
 import java.util.List;
@@ -19,12 +20,12 @@ public class RestaurantTestData {
     public static final Restaurant RESTAURANT1 = new Restaurant(RESTAURANT1_ID, "Элис", DISHES1);
     public static final Restaurant RESTAURANT2 = new Restaurant(RESTAURANT2_ID, "Местечко", DISHES2);
 
-    public static Restaurant getCreated() {
-        return new Restaurant(null, "Новый ресторан");
+    public static RestaurantTo getCreatedTo() {
+        return new RestaurantTo(null, "Новый ресторан");
     }
 
-    public static Restaurant getUpdated() {
-        return new Restaurant(RESTAURANT1_ID, "Обновленный ресторан");
+    public static RestaurantTo getUpdatedTo() {
+        return new RestaurantTo(RESTAURANT1_ID, "Обновленный ресторан");
     }
 
     public static void assertMatch(Restaurant actual, Restaurant expected) {

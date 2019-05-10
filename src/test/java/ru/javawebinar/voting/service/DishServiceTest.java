@@ -7,7 +7,6 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.javawebinar.voting.model.Dish;
 import ru.javawebinar.voting.to.DishTo;
-import ru.javawebinar.voting.util.DishUtil;
 import ru.javawebinar.voting.util.exception.InvalidDateTimeException;
 import ru.javawebinar.voting.util.exception.NotFoundException;
 
@@ -18,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static ru.javawebinar.voting.DishTestData.*;
 import static ru.javawebinar.voting.RestaurantTestData.RESTAURANT1_ID;
 import static ru.javawebinar.voting.RestaurantTestData.RESTAURANT2_ID;
+import static ru.javawebinar.voting.util.DishUtil.createNewFromTo;
+import static ru.javawebinar.voting.util.DishUtil.updateFromTo;
 
 @SpringJUnitConfig(locations = {
         "classpath:spring/spring-app.xml",
@@ -32,7 +33,7 @@ class DishServiceTest {
     @Test
     void create() {
         DishTo createdTo = getCreatedTo();
-        Dish newDish = DishUtil.createNewFromTo(createdTo);
+        Dish newDish = createNewFromTo(createdTo);
         Dish created = service.create(newDish, RESTAURANT1_ID);
         newDish.setId(created.getId());
         assertMatch(newDish, created);
@@ -43,7 +44,7 @@ class DishServiceTest {
     void update() {
         DishTo updatedTo = getUpdatedTo();
         service.update(updatedTo, RESTAURANT1_ID);
-        assertMatch(service.get(DISH_ID_FOR_CURRENT_DATE, RESTAURANT1_ID), DishUtil.updateFromTo(new Dish(DISH_FOR_CURRENT_DATE), updatedTo));
+        assertMatch(service.get(DISH_ID_FOR_CURRENT_DATE, RESTAURANT1_ID), updateFromTo(new Dish(DISH_FOR_CURRENT_DATE), updatedTo));
     }
 
     @Test

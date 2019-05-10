@@ -7,7 +7,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.voting.model.Restaurant;
+import ru.javawebinar.voting.to.RestaurantTo;
 import ru.javawebinar.voting.to.RestaurantsWithDishes;
+import ru.javawebinar.voting.util.RestaurantUtil;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -21,8 +23,8 @@ public class RestaurantRestController extends AbstractRestaurantController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Restaurant> createWithLocation(@Valid @RequestBody Restaurant restaurant) {
-        Restaurant created = super.create(restaurant);
+    public ResponseEntity<Restaurant> createWithLocation(@Valid @RequestBody RestaurantTo restaurantTo) {
+        Restaurant created = super.create(RestaurantUtil.createNewFromTo(restaurantTo));
 
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
@@ -35,8 +37,8 @@ public class RestaurantRestController extends AbstractRestaurantController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody Restaurant restaurant, @PathVariable int id) {
-        super.update(restaurant, id);
+    public void update(@Valid @RequestBody RestaurantTo restaurantTo, @PathVariable int id) {
+        super.update(restaurantTo, id);
     }
 
     @Override

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.javawebinar.voting.model.Restaurant;
 import ru.javawebinar.voting.service.RestaurantService;
+import ru.javawebinar.voting.to.RestaurantTo;
 import ru.javawebinar.voting.to.RestaurantsWithDishes;
 import ru.javawebinar.voting.web.SecurityUtil;
 
@@ -28,11 +29,11 @@ public abstract class AbstractRestaurantController {
         return service.create(restaurant);
     }
 
-    public void update(Restaurant restaurant, int id) {
+    public void update(RestaurantTo restaurantTo, int id) {
         int userId = SecurityUtil.authUserId();
-        assureIdConsistent(restaurant, id);
-        log.info("user {} update {}", userId, restaurant);
-        service.update(restaurant);
+        assureIdConsistent(restaurantTo, id);
+        log.info("user {} update {}", userId, restaurantTo);
+        service.update(restaurantTo);
     }
 
     public Restaurant get(int id) {

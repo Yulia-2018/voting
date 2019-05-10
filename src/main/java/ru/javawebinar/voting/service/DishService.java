@@ -11,7 +11,7 @@ public interface DishService {
 
     Dish create(Dish dish, int restaurantId);
 
-    void update(DishTo dish, int restaurantId) throws NotFoundException;
+    void update(DishTo dishTo, int restaurantId) throws NotFoundException;
 
     void delete(int id, int restaurantId) throws NotFoundException;
 

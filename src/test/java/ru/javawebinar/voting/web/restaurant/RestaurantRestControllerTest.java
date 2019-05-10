@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.voting.model.Restaurant;
 import ru.javawebinar.voting.service.RestaurantService;
+import ru.javawebinar.voting.to.RestaurantTo;
 import ru.javawebinar.voting.web.AbstractControllerTest;
 import ru.javawebinar.voting.web.json.JsonUtil;
 
@@ -21,6 +22,8 @@ import static ru.javawebinar.voting.RestaurantTestData.*;
 import static ru.javawebinar.voting.TestUtil.*;
 import static ru.javawebinar.voting.UserTestData.ADMIN;
 import static ru.javawebinar.voting.UserTestData.USER;
+import static ru.javawebinar.voting.util.RestaurantUtil.createNewFromTo;
+import static ru.javawebinar.voting.util.RestaurantUtil.updateFromTo;
 import static ru.javawebinar.voting.util.RestaurantsWithDishesUtil.getRestaurantsWithDishes;
 
 class RestaurantRestControllerTest extends AbstractControllerTest {
@@ -32,15 +35,17 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testCreate() throws Exception {
-        Restaurant created = getCreated();
+        RestaurantTo createdTo = getCreatedTo();
         ResultActions action = mockMvc.perform(post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(created))
+                .content(JsonUtil.writeValue(createdTo))
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isCreated());
 
         Restaurant returned = readFromJson(action, Restaurant.class);
+
+        Restaurant created = createNewFromTo(createdTo);
         created.setId(returned.getId());
 
         assertMatch(returned, created);
@@ -49,10 +54,10 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testCreateForbidden() throws Exception {
-        Restaurant created = getCreated();
+        RestaurantTo createdTo = getCreatedTo();
         mockMvc.perform(post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(created))
+                .content(JsonUtil.writeValue(createdTo))
                 .with(userHttpBasic(USER)))
                 .andDo(print())
                 .andExpect(status().isForbidden())
@@ -61,10 +66,10 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testCreateInvalid() throws Exception {
-        Restaurant created = new Restaurant(null, "R");
+        RestaurantTo createdTo = new RestaurantTo(null, "R");
         mockMvc.perform(post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(created))
+                .content(JsonUtil.writeValue(createdTo))
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity());
@@ -73,10 +78,10 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
     @Test
     @Transactional(propagation = Propagation.NEVER)
     void testCreateDuplicateName() throws Exception {
-        Restaurant created = new Restaurant(null, "Местечко");
+        RestaurantTo createdTo = new RestaurantTo(null, "Местечко");
         mockMvc.perform(post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(created))
+                .content(JsonUtil.writeValue(createdTo))
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isConflict());
@@ -84,23 +89,23 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testUpdate() throws Exception {
-        Restaurant updated = getUpdated();
+        RestaurantTo updatedTo = getUpdatedTo();
 
         mockMvc.perform(put(REST_URL + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(updated))
+                .content(JsonUtil.writeValue(updatedTo))
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        assertMatch(service.get(RESTAURANT1_ID), updated);
+        assertMatch(service.get(RESTAURANT1_ID), updateFromTo(new Restaurant(RESTAURANT1), updatedTo));
     }
 
     @Test
     void testUpdateForbidden() throws Exception {
-        Restaurant updated = getUpdated();
+        RestaurantTo updatedTo = getUpdatedTo();
 
         mockMvc.perform(put(REST_URL + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(updated))
+                .content(JsonUtil.writeValue(updatedTo))
                 .with(userHttpBasic(USER)))
                 .andDo(print())
                 .andExpect(status().isForbidden())
@@ -109,9 +114,9 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testUpdateInvalid() throws Exception {
-        Restaurant updated = new Restaurant(RESTAURANT1_ID, null);
+        RestaurantTo updatedTo = new RestaurantTo(RESTAURANT1_ID, null);
         mockMvc.perform(put(REST_URL + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(updated))
+                .content(JsonUtil.writeValue(updatedTo))
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity());
@@ -120,10 +125,10 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
     @Test
     @Transactional(propagation = Propagation.NEVER)
     void testUpdateDuplicateName() throws Exception {
-        Restaurant updated = new Restaurant(RESTAURANT1_ID, "Местечко");
+        RestaurantTo updatedTo = new RestaurantTo(RESTAURANT1_ID, "Местечко");
 
         mockMvc.perform(put(REST_URL + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(updated))
+                .content(JsonUtil.writeValue(updatedTo))
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isConflict());
