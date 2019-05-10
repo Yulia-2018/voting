@@ -8,14 +8,9 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-@NamedQueries({
-        @NamedQuery(name = Vote.ALL, query = "SELECT v FROM Vote v WHERE v.date=:date")
-})
 @Entity
 @Table(name = "votes", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date"}, name = "votes_unique_user_date_idx")})
 public class Vote extends AbstractBaseEntity {
-
-    public static final String ALL = "Vote.getAll";
 
     @Column(name = "date", nullable = false, columnDefinition = "DATE default now()")
     @NotNull(groups = View.Persist.class)

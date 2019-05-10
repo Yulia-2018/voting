@@ -8,16 +8,9 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-@NamedQueries({
-        @NamedQuery(name = Dish.DELETE, query = "DELETE FROM Dish m WHERE m.id=:id AND m.restaurant.id=:restaurantId"),
-        @NamedQuery(name = Dish.ALL_SORTED, query = "SELECT m FROM Dish m WHERE m.restaurant.id=:restaurantId AND m.date=:date ORDER BY m.name")
-})
 @Entity
 @Table(name = "dishes", uniqueConstraints = {@UniqueConstraint(columnNames = {"restaurant_id", "date", "name"}, name = "dishes_unique_restaurant_date_name_idx")})
 public class Dish extends AbstractNamedEntity {
-
-    public static final String DELETE = "Dish.delete";
-    public static final String ALL_SORTED = "Dish.getAllSorted";
 
     @Column(name = "price", nullable = false)
     @Range(min = 1, max = 100000)
