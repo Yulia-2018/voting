@@ -1,4 +1,4 @@
-##Voting system for deciding where to have lunch (REST only).
+###Voting system for deciding where to have lunch (REST only).
 
 ####REST API using Hibernate/Spring/SpringMVC without frontend.
 
@@ -8,13 +8,15 @@ Users can vote on which restaurant they want to have lunch.
 Only one vote counted per user.
 If user votes again the same day: if it is before 11:00 we asume that he changed his mind, if it is after 11:00 then it is too late, vote can't be changed.
 
-##GitHub
+###GitHub
+
 https://github.com/Yulia-2018/voting
 
-##hsqldb
+###hsqldb
+
 C:/temp/voting
 
-##Curl
+###Curl
 
 ### Admin Users
 #### get All Users
