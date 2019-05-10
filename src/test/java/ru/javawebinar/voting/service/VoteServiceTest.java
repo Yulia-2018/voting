@@ -13,12 +13,12 @@ import ru.javawebinar.voting.util.exception.NotFoundException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static ru.javawebinar.voting.RestaurantTestData.RESTAURANT1_ID;
 import static ru.javawebinar.voting.UserTestData.ADMIN_ID;
 import static ru.javawebinar.voting.UserTestData.USER_ID;
 import static ru.javawebinar.voting.VoteTestData.*;
+import static ru.javawebinar.voting.util.ValidationUtil.TIME;
 
 @SpringJUnitConfig(locations = {
         "classpath:spring/spring-app.xml",
@@ -33,54 +33,89 @@ class VoteServiceTest {
     @Test
     void create() {
         Vote newVote = getCreated();
-        if (LocalTime.now().compareTo(LocalTime.of(11, 0)) <= 0) {
+        if (LocalTime.now().compareTo(TIME) <= 0) {
             Vote created = service.create(newVote, ADMIN_ID, RESTAURANT1_ID);
             newVote.setId(created.getId());
             RestaurantTestData.assertMatch(newVote.getRestaurant(), created.getRestaurant());
             assertMatch(newVote, created);
             assertMatch(service.getAll(newVote.getDate()), VOTE_FOR_CURRENT_DATE, newVote);
         } else {
-            assertThrows(InvalidDateTimeException.class, () -> service.create(newVote, USER_ID, RESTAURANT1_ID));
+            InvalidDateTimeException e = assertThrows(InvalidDateTimeException.class, () -> service.create(newVote, ADMIN_ID, RESTAURANT1_ID));
+            String msg = e.getMessage();
+            assertTrue(msg.contains("Time"));
+            assertTrue(msg.contains("is invalid"));
         }
     }
 
     @Test
     void createInvalidDate() {
-        Vote newVote = new Vote(null, LocalDate.of(2018, 12, 15));
-        assertThrows(InvalidDateTimeException.class, () -> service.create(newVote, USER_ID, RESTAURANT1_ID));
+        LocalDate date = LocalDate.of(2018, 12, 15);
+        Vote newVote = new Vote(null, date);
+        InvalidDateTimeException e = assertThrows(InvalidDateTimeException.class, () -> service.create(newVote, USER_ID, RESTAURANT1_ID));
+        String msg = e.getMessage();
+        if (LocalTime.now().compareTo(TIME) <= 0) {
+            assertEquals(msg, "Date " + date + " is invalid");
+        } else {
+            assertTrue(msg.contains("Time"));
+            assertTrue(msg.contains("is invalid"));
+        }
     }
 
     @Test
     void update() {
         Vote updated = getUpdated();
-        if (LocalTime.now().compareTo(LocalTime.of(11, 0)) <= 0) {
+        if (LocalTime.now().compareTo(TIME) <= 0) {
             service.update(updated, USER_ID, RESTAURANT1_ID);
             Vote actual = service.get(VOTE_ID_FOR_CURRENT_DATE, USER_ID);
             RestaurantTestData.assertMatch(actual.getRestaurant(), updated.getRestaurant());
             assertMatch(actual, updated);
         } else {
-            assertThrows(InvalidDateTimeException.class, () -> service.update(updated, USER_ID, RESTAURANT1_ID));
+            InvalidDateTimeException e = assertThrows(InvalidDateTimeException.class, () -> service.update(updated, USER_ID, RESTAURANT1_ID));
+            String msg = e.getMessage();
+            assertTrue(msg.contains("Time"));
+            assertTrue(msg.contains("is invalid"));
         }
     }
 
     @Test
     void updateInvalidDate() {
-        assertThrows(InvalidDateTimeException.class, () -> service.update(VOTE1_USER, USER_ID, RESTAURANT1_ID));
+        InvalidDateTimeException e = assertThrows(InvalidDateTimeException.class, () -> service.update(VOTE1_USER, USER_ID, RESTAURANT1_ID));
+        String msg = e.getMessage();
+        if (LocalTime.now().compareTo(TIME) <= 0) {
+            assertEquals(msg, "Date " + VOTE1_USER.getDate() + " is invalid");
+        } else {
+            assertTrue(msg.contains("Time"));
+            assertTrue(msg.contains("is invalid"));
+        }
     }
 
     @Test
     void updateNotFound() {
-        assertThrows(NotFoundException.class, () -> service.update(getUpdated(), ADMIN_ID, RESTAURANT1_ID));
+        if (LocalTime.now().compareTo(TIME) <= 0) {
+            NotFoundException e = assertThrows(NotFoundException.class, () -> service.update(getUpdated(), ADMIN_ID, RESTAURANT1_ID));
+            String msg = e.getMessage();
+            assertEquals(msg, "Not found entity with id=" + VOTE_ID_FOR_CURRENT_DATE);
+        } else {
+            InvalidDateTimeException e = assertThrows(InvalidDateTimeException.class, () -> service.update(getUpdated(), ADMIN_ID, RESTAURANT1_ID));
+            String msg = e.getMessage();
+            assertTrue(msg.contains("Time"));
+            assertTrue(msg.contains("is invalid"));
+        }
     }
 
     @Test
     void updateDate() {
         Vote updated = new Vote(VOTE1_USER);
-        LocalDate newDate = LocalDate.of(2019, 5, 3);
+        LocalDate newDate = LocalDate.now();
         updated.setDate(newDate);
         InvalidDateTimeException e = assertThrows(InvalidDateTimeException.class, () -> service.update(updated, USER_ID, RESTAURANT1_ID));
         String msg = e.getMessage();
-        assertTrue(msg.contains("The date of voting " + VOTE1_USER.getDate() + " cannot be changed to date " + newDate));
+        if (LocalTime.now().compareTo(TIME) <= 0) {
+            assertEquals(msg, "Date " + VOTE1_USER.getDate() + " is invalid");
+        } else {
+            assertTrue(msg.contains("Time"));
+            assertTrue(msg.contains("is invalid"));
+        }
     }
 
     @Test

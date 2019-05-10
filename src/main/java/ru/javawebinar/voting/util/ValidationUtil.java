@@ -13,6 +13,8 @@ import java.time.LocalTime;
 
 public class ValidationUtil {
 
+    public static final LocalTime TIME = LocalTime.of(11, 0);
+
     private ValidationUtil() {
     }
 
@@ -50,21 +52,15 @@ public class ValidationUtil {
         }
     }
 
-    public static void checkInvalidDateTime(LocalDate date, LocalTime time) {
-        if (date.compareTo(LocalDate.now()) != 0 | time.compareTo(LocalTime.of(11, 0)) > 0) {
-            throw new InvalidDateTimeException("Date " + date + " or time " + time + " is invalid");
+    public static void checkInvalidDate(LocalDate actual, LocalDate expected) {
+        if (actual.compareTo(expected) != 0) {
+            throw new InvalidDateTimeException("Date " + actual + " is invalid");
         }
     }
 
-    public static void checkInvalidDate(LocalDate newDate, LocalDate oldDate) {
-        if (newDate.compareTo(oldDate) != 0) {
-            throw new InvalidDateTimeException("The date of voting " + oldDate + " cannot be changed to date " + newDate);
-        }
-    }
-
-    public static void checkCurrentDate(LocalDate date) {
-        if (date.compareTo(LocalDate.now()) != 0) {
-            throw new InvalidDateTimeException("It is forbidden to change historical data (" + date + ")");
+    public static void checkInvalidTime(LocalTime time) {
+        if (time.compareTo(TIME) > 0) {
+            throw new InvalidDateTimeException("Time " + time + " is invalid");
         }
     }
 

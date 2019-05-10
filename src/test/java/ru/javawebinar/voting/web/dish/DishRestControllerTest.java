@@ -109,7 +109,7 @@ class DishRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(detailMessage("It is forbidden to change historical data (" + DISH1_1.getDate() +")"));
+                .andExpect(detailMessage("Date " + DISH1_1.getDate() +" is invalid"));
     }
 
     @Test
@@ -134,17 +134,6 @@ class DishRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity());
     }
-
-    /*@Test
-    @Transactional(propagation = Propagation.NEVER)
-    void testUpdateDuplicateRestaurantDateName() throws Exception {
-        Dish updated = new Dish(DISH1_ID, "Шашлычок", 100, LocalDate.of(2019, 1, 1));
-        mockMvc.perform(put(REST_URL + DISH1_ID + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(updated))
-                .with(userHttpBasic(ADMIN)))
-                .andDo(print())
-                .andExpect(status().isConflict());
-    }*/
 
     @Test
     void testUpdateNotFound() throws Exception {
@@ -173,7 +162,7 @@ class DishRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(detailMessage("It is forbidden to change historical data (" + DISH2_1.getDate() +")"));;
+                .andExpect(detailMessage("Date " + DISH2_1.getDate() +" is invalid"));
     }
 
     @Test

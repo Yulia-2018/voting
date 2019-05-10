@@ -35,7 +35,7 @@ public class DishServiceImpl implements DishService {
     @Override
     public void update(DishTo dishTo, int restaurantId) {
         Dish dishInDb = get(dishTo.getId(), restaurantId);
-        checkCurrentDate(dishInDb.getDate());
+        checkInvalidDate(dishInDb.getDate(), LocalDate.now());
         Dish dish = updateFromTo(dishInDb, dishTo);
         repository.save(dish, restaurantId);
     }
@@ -44,7 +44,7 @@ public class DishServiceImpl implements DishService {
     @Override
     public void delete(int id, int restaurantId) throws NotFoundException {
         Dish dishInDb = get(id, restaurantId);
-        checkCurrentDate(dishInDb.getDate());
+        checkInvalidDate(dishInDb.getDate(), LocalDate.now());
         repository.delete(id, restaurantId);
     }
 

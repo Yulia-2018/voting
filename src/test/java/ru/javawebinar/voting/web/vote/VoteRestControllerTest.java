@@ -25,6 +25,7 @@ import static ru.javawebinar.voting.UserTestData.*;
 import static ru.javawebinar.voting.VoteTestData.assertMatch;
 import static ru.javawebinar.voting.VoteTestData.contentJson;
 import static ru.javawebinar.voting.VoteTestData.*;
+import static ru.javawebinar.voting.util.ValidationUtil.TIME;
 import static ru.javawebinar.voting.util.VotesUtil.getResultsVoting;
 
 class VoteRestControllerTest extends AbstractControllerTest {
@@ -37,64 +38,42 @@ class VoteRestControllerTest extends AbstractControllerTest {
     @Test
     void testCreate() throws Exception {
         Vote created = getCreated();
-        if (LocalTime.now().compareTo(LocalTime.of(11, 0)) <= 0) {
-            ResultActions action = mockMvc.perform(post(REST_URL + "?restaurantId=" + RESTAURANT1_ID)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(JsonUtil.writeValue(created))
-                    .with(userHttpBasic(ADMIN)))
-                    .andDo(print())
-                    .andExpect(status().isCreated());
+        ResultActions resultActions = mockMvc.perform(post(REST_URL + "?restaurantId=" + RESTAURANT1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(created))
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print());
+        if (LocalTime.now().compareTo(TIME) <= 0) {
+            resultActions.andExpect(status().isCreated());
 
-            Vote returned = readFromJson(action, Vote.class);
+            Vote returned = readFromJson(resultActions, Vote.class);
             created.setId(returned.getId());
 
-            //RestaurantTestData.assertMatch(returned.getRestaurant(), created.getRestaurant());
             assertMatch(returned, created);
             assertMatch(service.getAll(created.getDate()), VOTE_FOR_CURRENT_DATE, created);
         } else {
-            mockMvc.perform(post(REST_URL + "?restaurantId=" + RESTAURANT1_ID)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(JsonUtil.writeValue(created))
-                    .with(userHttpBasic(ADMIN)))
-                    .andDo(print())
+            resultActions
                     .andExpect(status().isUnprocessableEntity())
-                    .andExpect(content().string(containsString("Date")))
-                    .andExpect(content().string(containsString("or time")))
+                    .andExpect(content().string(containsString("Time")))
                     .andExpect(content().string(containsString("is invalid")));
         }
     }
-
-    /*@Test
-    void testCreateInvalid() throws Exception {
-        Vote created = new Vote(null, null);
-        mockMvc.perform(post(REST_URL + "?restaurantId=" + RESTAURANT1_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(created))
-                .with(userHttpBasic(USER)))
-                .andDo(print())
-                .andExpect(status().isUnprocessableEntity());
-    }*/
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
     void testCreateDuplicateUserDate() throws Exception {
         Vote created = getCreated();
-        if (LocalTime.now().compareTo(LocalTime.of(11, 0)) <= 0) {
-            mockMvc.perform(post(REST_URL + "?restaurantId=" + RESTAURANT1_ID)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(JsonUtil.writeValue(created))
-                    .with(userHttpBasic(USER)))
-                    .andDo(print())
-                    .andExpect(status().isConflict());
+        ResultActions resultActions = mockMvc.perform(post(REST_URL + "?restaurantId=" + RESTAURANT1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(created))
+                .with(userHttpBasic(USER)))
+                .andDo(print());
+        if (LocalTime.now().compareTo(TIME) <= 0) {
+            resultActions.andExpect(status().isConflict());
         } else {
-            mockMvc.perform(post(REST_URL + "?restaurantId=" + RESTAURANT1_ID)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(JsonUtil.writeValue(created))
-                    .with(userHttpBasic(USER)))
-                    .andDo(print())
+            resultActions
                     .andExpect(status().isUnprocessableEntity())
-                    .andExpect(content().string(containsString("Date")))
-                    .andExpect(content().string(containsString("or time")))
+                    .andExpect(content().string(containsString("Time")))
                     .andExpect(content().string(containsString("is invalid")));
         }
     }
@@ -102,62 +81,58 @@ class VoteRestControllerTest extends AbstractControllerTest {
     @Test
     void testUpdate() throws Exception {
         Vote updated = getUpdated();
-
-        if (LocalTime.now().compareTo(LocalTime.of(11, 0)) <= 0) {
-            mockMvc.perform(put(REST_URL + VOTE_ID_FOR_CURRENT_DATE + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
-                    .content(JsonUtil.writeValue(updated))
-                    .with(userHttpBasic(USER)))
-                    .andDo(print())
-                    .andExpect(status().isNoContent());
+        ResultActions resultActions = mockMvc.perform(put(REST_URL + VOTE_ID_FOR_CURRENT_DATE + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated))
+                .with(userHttpBasic(USER)))
+                .andDo(print());
+        if (LocalTime.now().compareTo(TIME) <= 0) {
+            resultActions.andExpect(status().isNoContent());
 
             Vote actual = service.get(VOTE_ID_FOR_CURRENT_DATE, USER_ID);
-            //RestaurantTestData.assertMatch(actual.getRestaurant(), updated.getRestaurant());
             assertMatch(actual, updated);
         } else {
-            mockMvc.perform(put(REST_URL + VOTE_ID_FOR_CURRENT_DATE + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
-                    .content(JsonUtil.writeValue(updated))
-                    .with(userHttpBasic(USER)))
-                    .andDo(print())
+            resultActions
                     .andExpect(status().isUnprocessableEntity())
-                    .andExpect(content().string(containsString("Date")))
-                    .andExpect(content().string(containsString("or time")))
+                    .andExpect(content().string(containsString("Time")))
                     .andExpect(content().string(containsString("is invalid")));
         }
     }
 
-    /*@Test
-    void testUpdateInvalid() throws Exception {
-        Vote updated = new Vote(VOTE_ID_FOR_CURRENT_DATE, null);
-
-        mockMvc.perform(put(REST_URL + VOTE_ID_FOR_CURRENT_DATE + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(updated))
-                .with(userHttpBasic(USER)))
-                .andDo(print())
-                .andExpect(status().isUnprocessableEntity());
-    }*/
-
     @Test
     void testUpdateNotFound() throws Exception {
         Vote updated = getUpdated();
-        mockMvc.perform(put(REST_URL + VOTE_ID_FOR_CURRENT_DATE + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(put(REST_URL + VOTE_ID_FOR_CURRENT_DATE + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated))
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
-                .andExpect(status().isUnprocessableEntity())
-                .andExpect(detailMessage("Not found entity with id=" + VOTE_ID_FOR_CURRENT_DATE));
+                .andExpect(status().isUnprocessableEntity());
+        if (LocalTime.now().compareTo(TIME) <= 0) {
+            resultActions.andExpect(detailMessage("Not found entity with id=" + VOTE_ID_FOR_CURRENT_DATE));
+        } else {
+            resultActions
+                    .andExpect(content().string(containsString("Time")))
+                    .andExpect(content().string(containsString("is invalid")));
+        }
     }
 
     @Test
     void testUpdateDate() throws Exception {
         Vote updated = new Vote(VOTE1_USER);
-        LocalDate newDate = LocalDate.of(2019, 5, 3);
+        LocalDate newDate = LocalDate.now();
         updated.setDate(newDate);
-        mockMvc.perform(put(REST_URL + VOTE1_ID + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
+        ResultActions resultActions = mockMvc.perform(put(REST_URL + VOTE1_ID + "?restaurantId=" + RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated))
                 .with(userHttpBasic(USER)))
                 .andDo(print())
-                .andExpect(status().isUnprocessableEntity())
-                .andExpect(detailMessage("The date of voting " + VOTE1_USER.getDate() + " cannot be changed to date " + newDate));
+                .andExpect(status().isUnprocessableEntity());
+        if (LocalTime.now().compareTo(TIME) <= 0) {
+            resultActions
+                    .andExpect(detailMessage("Date " + VOTE1_USER.getDate() + " is invalid"));
+        } else {
+            resultActions
+                    .andExpect(content().string(containsString("Time")))
+                    .andExpect(content().string(containsString("is invalid")));
+        }
     }
 
     @Test
