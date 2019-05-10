@@ -1,10 +1,9 @@
-package ru.javawebinar.voting.repository.datajpa;
+package ru.javawebinar.voting.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.voting.model.Restaurant;
-import ru.javawebinar.voting.repository.RestaurantRepository;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -1,4 +1,4 @@
-package ru.javawebinar.voting.repository.datajpa;
+package ru.javawebinar.voting.repository;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
