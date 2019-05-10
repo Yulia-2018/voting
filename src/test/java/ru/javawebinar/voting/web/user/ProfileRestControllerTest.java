@@ -95,15 +95,6 @@ class ProfileRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void testDelete() throws Exception {
-        mockMvc.perform(delete(REST_URL)
-                .with(userHttpBasic(USER)))
-                .andDo(print())
-                .andExpect(status().isNoContent());
-        assertMatch(userService.getAll(), ADMIN);
-    }
-
-    @Test
     void testGet() throws Exception {
         mockMvc.perform(get(REST_URL)
                 .with(userHttpBasic(USER)))

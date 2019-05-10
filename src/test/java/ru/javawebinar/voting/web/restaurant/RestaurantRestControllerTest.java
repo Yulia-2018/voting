@@ -130,33 +130,6 @@ class RestaurantRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void testDelete() throws Exception {
-        mockMvc.perform(delete(REST_URL + RESTAURANT1_ID)
-                .with(userHttpBasic(ADMIN)))
-                .andDo(print())
-                .andExpect(status().isNoContent());
-        assertMatch(service.getAll(), RESTAURANT2);
-    }
-
-    @Test
-    void testDeleteForbidden() throws Exception {
-        mockMvc.perform(delete(REST_URL + RESTAURANT1_ID)
-                .with(userHttpBasic(USER)))
-                .andDo(print())
-                .andExpect(status().isForbidden())
-                .andExpect(detailMessage("Access is denied"));
-    }
-
-    @Test
-    void testDeleteNotFound() throws Exception {
-        mockMvc.perform(delete(REST_URL + 1)
-                .with(userHttpBasic(ADMIN)))
-                .andDo(print())
-                .andExpect(status().isUnprocessableEntity())
-                .andExpect(detailMessage("Not found entity with id=1"));
-    }
-
-    @Test
     void testGet() throws Exception {
         mockMvc.perform(get(REST_URL + RESTAURANT1_ID)
                 .with(userHttpBasic(USER)))

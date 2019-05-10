@@ -46,11 +46,6 @@ public abstract class AbstractUserController {
         service.update(userTo);
     }
 
-    public void delete(int id) {
-        log.info("delete {}", id);
-        service.delete(id);
-    }
-
     public User get(int id) {
         log.info("get {}", id);
         return service.get(id);

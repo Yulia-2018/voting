@@ -36,12 +36,6 @@ public class ProfileRestController extends AbstractUserController {
         super.update(userTo, authUser.getId());
     }
 
-    @DeleteMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@AuthenticationPrincipal AuthorizedUser authUser) {
-        super.delete(authUser.getId());
-    }
-
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public User get(@AuthenticationPrincipal AuthorizedUser authUser) {
         return super.get(authUser.getId());

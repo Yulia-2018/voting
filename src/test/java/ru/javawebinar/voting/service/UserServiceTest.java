@@ -58,17 +58,6 @@ class UserServiceTest {
     }
 
     @Test
-    void delete() {
-        service.delete(USER_ID);
-        assertMatch(service.getAll(), ADMIN);
-    }
-
-    @Test
-    void deletedNotFound() {
-        assertThrows(NotFoundException.class, () -> service.delete(1));
-    }
-
-    @Test
     void get() {
         User user = service.get(ADMIN_ID);
         assertMatch(user, ADMIN);

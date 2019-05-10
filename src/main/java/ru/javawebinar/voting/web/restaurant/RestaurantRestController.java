@@ -40,14 +40,6 @@ public class RestaurantRestController extends AbstractRestaurantController {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @DeleteMapping("/{id}")
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable int id) {
-        super.delete(id);
-    }
-
-    @Override
     @GetMapping("/{id}")
     public Restaurant get(@PathVariable int id) {
         return super.get(id);

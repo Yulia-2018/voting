@@ -21,11 +21,6 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
     }
 
     @Override
-    public boolean delete(int id) {
-        return crudRepository.delete(id) != 0;
-    }
-
-    @Override
     public Restaurant get(int id) {
         return crudRepository.findById(id).orElse(null);
     }

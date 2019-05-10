@@ -104,24 +104,6 @@ class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void testDelete() throws Exception {
-        mockMvc.perform(delete(REST_URL + USER_ID)
-                .with(userHttpBasic(ADMIN)))
-                .andDo(print())
-                .andExpect(status().isNoContent());
-        assertMatch(userService.getAll(), ADMIN);
-    }
-
-    @Test
-    void testDeleteNotFound() throws Exception {
-        mockMvc.perform(delete(REST_URL + 1)
-                .with(userHttpBasic(ADMIN)))
-                .andDo(print())
-                .andExpect(status().isUnprocessableEntity())
-                .andExpect(detailMessage("Not found entity with id=1"));
-    }
-
-    @Test
     void testGet() throws Exception {
         mockMvc.perform(get(REST_URL + ADMIN_ID)
                 .with(userHttpBasic(ADMIN)))

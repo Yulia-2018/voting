@@ -41,17 +41,6 @@ class RestaurantServiceTest {
     }
 
     @Test
-    void delete() {
-        service.delete(RESTAURANT1_ID);
-        assertMatch(service.getAll(), RESTAURANT2);
-    }
-
-    @Test
-    void deleteNotFound() {
-        assertThrows(NotFoundException.class, () -> service.delete(1));
-    }
-
-    @Test
     void get() {
         Restaurant restaurant = service.get(RESTAURANT2_ID);
         assertMatch(restaurant, RESTAURANT2);

@@ -41,9 +41,6 @@
 #### get Restaurants not found
 `curl -s http://localhost:8080/voting/rest/restaurants/100548 --user user@yandex.ru:password`
 
-#### delete Restaurants
-`curl -s -X DELETE http://localhost:8080/voting/rest/restaurants/100002 --user admin@gmail.com:admin`
-
 #### create Restaurants
 `curl -s -X POST -d '{"name":"Created restaurant"}' -H 'Content-Type:application/json;charset=UTF-8' http://localhost:8080/voting/rest/restaurants --user admin@gmail.com:admin`
 

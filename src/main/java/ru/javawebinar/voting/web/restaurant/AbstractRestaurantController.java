@@ -35,12 +35,6 @@ public abstract class AbstractRestaurantController {
         service.update(restaurant);
     }
 
-    public void delete(int id) {
-        int userId = SecurityUtil.authUserId();
-        log.info("user {} delete restaurant {}", userId, id);
-        service.delete(id);
-    }
-
     public Restaurant get(int id) {
         int userId = SecurityUtil.authUserId();
         log.info("user {} get restaurant {}", userId, id);

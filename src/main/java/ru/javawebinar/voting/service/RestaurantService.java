@@ -12,8 +12,6 @@ public interface RestaurantService {
 
     void update(Restaurant restaurant);
 
-    void delete(int id) throws NotFoundException;
-
     Restaurant get(int id) throws NotFoundException;
 
     List<Restaurant> getAll();
