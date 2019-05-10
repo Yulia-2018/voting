@@ -67,8 +67,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         repository.save(prepareToSave(user, passwordEncoder));
     }
 
-    @Override
     @Transactional
+    @Override
     public void enable(int id, boolean enabled) {
         User user = get(id);
         user.setEnabled(enabled);

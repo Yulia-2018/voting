@@ -2,6 +2,7 @@ package ru.javawebinar.voting.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import ru.javawebinar.voting.model.Vote;
 import ru.javawebinar.voting.repository.VoteRepository;
@@ -34,6 +35,7 @@ public class VoteServiceImpl implements VoteService {
         return repository.save(vote, userId, restaurantId);
     }
 
+    @Transactional
     @Override
     public void update(Vote vote, int userId, int restaurantId) throws NotFoundException, InvalidDateTimeException {
         Assert.notNull(vote, "vote must not be null");
