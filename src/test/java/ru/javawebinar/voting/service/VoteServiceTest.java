@@ -42,8 +42,7 @@ class VoteServiceTest {
         } else {
             InvalidDateTimeException e = assertThrows(InvalidDateTimeException.class, () -> service.create(newVote, ADMIN_ID, RESTAURANT1_ID));
             String msg = e.getMessage();
-            assertTrue(msg.contains("Time"));
-            assertTrue(msg.contains("is invalid"));
+            checkContentsString(msg);
         }
     }
 
@@ -56,8 +55,7 @@ class VoteServiceTest {
         if (LocalTime.now().compareTo(TIME) <= 0) {
             assertEquals(msg, "Date " + date + " is invalid");
         } else {
-            assertTrue(msg.contains("Time"));
-            assertTrue(msg.contains("is invalid"));
+            checkContentsString(msg);
         }
     }
 
@@ -72,8 +70,7 @@ class VoteServiceTest {
         } else {
             InvalidDateTimeException e = assertThrows(InvalidDateTimeException.class, () -> service.update(updated, USER_ID, RESTAURANT1_ID));
             String msg = e.getMessage();
-            assertTrue(msg.contains("Time"));
-            assertTrue(msg.contains("is invalid"));
+            checkContentsString(msg);
         }
     }
 
@@ -84,8 +81,7 @@ class VoteServiceTest {
         if (LocalTime.now().compareTo(TIME) <= 0) {
             assertEquals(msg, "Date " + VOTE1_USER.getDate() + " is invalid");
         } else {
-            assertTrue(msg.contains("Time"));
-            assertTrue(msg.contains("is invalid"));
+            checkContentsString(msg);
         }
     }
 
@@ -98,8 +94,7 @@ class VoteServiceTest {
         } else {
             InvalidDateTimeException e = assertThrows(InvalidDateTimeException.class, () -> service.update(getUpdated(), ADMIN_ID, RESTAURANT1_ID));
             String msg = e.getMessage();
-            assertTrue(msg.contains("Time"));
-            assertTrue(msg.contains("is invalid"));
+            checkContentsString(msg);
         }
     }
 
@@ -113,8 +108,7 @@ class VoteServiceTest {
         if (LocalTime.now().compareTo(TIME) <= 0) {
             assertEquals(msg, "Date " + VOTE1_USER.getDate() + " is invalid");
         } else {
-            assertTrue(msg.contains("Time"));
-            assertTrue(msg.contains("is invalid"));
+            checkContentsString(msg);
         }
     }
 
@@ -127,5 +121,10 @@ class VoteServiceTest {
     @Test
     void getNotFound() {
         assertThrows(NotFoundException.class, () -> service.get(VOTE1_ID, ADMIN_ID));
+    }
+
+    private void checkContentsString(String msg) {
+        assertTrue(msg.contains("Time"));
+        assertTrue(msg.contains("is invalid"));
     }
 }

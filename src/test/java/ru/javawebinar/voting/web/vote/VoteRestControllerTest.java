@@ -52,10 +52,7 @@ class VoteRestControllerTest extends AbstractControllerTest {
             assertMatch(returned, created);
             assertMatch(service.getAll(created.getDate()), VOTE_FOR_CURRENT_DATE, created);
         } else {
-            resultActions
-                    .andExpect(status().isUnprocessableEntity())
-                    .andExpect(content().string(containsString("Time")))
-                    .andExpect(content().string(containsString("is invalid")));
+            getAndCheckContentsString(resultActions).andExpect(status().isUnprocessableEntity());
         }
     }
 
@@ -71,10 +68,7 @@ class VoteRestControllerTest extends AbstractControllerTest {
         if (LocalTime.now().compareTo(TIME) <= 0) {
             resultActions.andExpect(status().isConflict());
         } else {
-            resultActions
-                    .andExpect(status().isUnprocessableEntity())
-                    .andExpect(content().string(containsString("Time")))
-                    .andExpect(content().string(containsString("is invalid")));
+            getAndCheckContentsString(resultActions).andExpect(status().isUnprocessableEntity());
         }
     }
 
@@ -91,10 +85,7 @@ class VoteRestControllerTest extends AbstractControllerTest {
             Vote actual = service.get(VOTE_ID_FOR_CURRENT_DATE, USER_ID);
             assertMatch(actual, updated);
         } else {
-            resultActions
-                    .andExpect(status().isUnprocessableEntity())
-                    .andExpect(content().string(containsString("Time")))
-                    .andExpect(content().string(containsString("is invalid")));
+            getAndCheckContentsString(resultActions).andExpect(status().isUnprocessableEntity());
         }
     }
 
@@ -109,9 +100,7 @@ class VoteRestControllerTest extends AbstractControllerTest {
         if (LocalTime.now().compareTo(TIME) <= 0) {
             resultActions.andExpect(detailMessage("Not found entity with id=" + VOTE_ID_FOR_CURRENT_DATE));
         } else {
-            resultActions
-                    .andExpect(content().string(containsString("Time")))
-                    .andExpect(content().string(containsString("is invalid")));
+            getAndCheckContentsString(resultActions);
         }
     }
 
@@ -129,9 +118,7 @@ class VoteRestControllerTest extends AbstractControllerTest {
             resultActions
                     .andExpect(detailMessage("Date " + VOTE1_USER.getDate() + " is invalid"));
         } else {
-            resultActions
-                    .andExpect(content().string(containsString("Time")))
-                    .andExpect(content().string(containsString("is invalid")));
+            getAndCheckContentsString(resultActions);
         }
     }
 
@@ -170,5 +157,11 @@ class VoteRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(contentJson(getResultsVoting(service.getAll(date), date)));
+    }
+
+    private ResultActions getAndCheckContentsString(ResultActions resultActions) throws Exception {
+        return resultActions
+                .andExpect(content().string(containsString("Time")))
+                .andExpect(content().string(containsString("is invalid")));
     }
 }
