@@ -109,7 +109,7 @@ class DishRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(detailMessage("It is forbidden to update historical data (" + DISH1_1.getDate() +")"));
+                .andExpect(detailMessage("It is forbidden to change historical data (" + DISH1_1.getDate() +")"));
     }
 
     @Test
@@ -173,7 +173,7 @@ class DishRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(detailMessage("It is forbidden to update historical data (" + DISH2_1.getDate() +")"));;
+                .andExpect(detailMessage("It is forbidden to change historical data (" + DISH2_1.getDate() +")"));;
     }
 
     @Test

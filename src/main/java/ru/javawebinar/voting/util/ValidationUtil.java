@@ -64,7 +64,7 @@ public class ValidationUtil {
 
     public static void checkCurrentDate(LocalDate date) {
         if (date.compareTo(LocalDate.now()) != 0) {
-            throw new InvalidDateTimeException("It is forbidden to update historical data (" + date + ")");
+            throw new InvalidDateTimeException("It is forbidden to change historical data (" + date + ")");
         }
     }
 

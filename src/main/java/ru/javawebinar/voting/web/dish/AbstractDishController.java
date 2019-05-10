@@ -27,13 +27,6 @@ public abstract class AbstractDishController {
         return service.create(dish, restaurantId);
     }
 
-    /*public void update(Dish dish, int id, int restaurantId) {
-        int userId = SecurityUtil.authUserId();
-        assureIdConsistent(dish, id);
-        log.info("user {} update {} for restaurant {}", userId, dish, restaurantId);
-        service.update(dish, restaurantId);
-    }*/
-
     public void update(DishTo dishTo, int id, int restaurantId) {
         int userId = SecurityUtil.authUserId();
         assureIdConsistent(dishTo, id);
