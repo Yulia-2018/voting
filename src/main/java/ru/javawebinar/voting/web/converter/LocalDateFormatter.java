@@ -8,10 +8,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class LocalDateFormatter implements Formatter<LocalDate> {
-    // Подумать, может ли параметр date быть null
+
     @Override
     public LocalDate parse(String text, Locale locale) {
-        //return parseLocalDate(text);
         return StringUtils.isEmpty(text) ? null : LocalDate.parse(text);
     }
 

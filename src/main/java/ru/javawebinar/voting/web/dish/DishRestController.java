@@ -54,7 +54,6 @@ public class DishRestController extends AbstractDishController {
         return super.get(id, restaurantId);
     }
 
-    // Подумать, про @RequestParam(required = false) у date
     @Override
     @GetMapping
     public List<Dish> getAll(@RequestParam int restaurantId, @RequestParam LocalDate date) {

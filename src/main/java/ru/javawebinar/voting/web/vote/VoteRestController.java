@@ -42,7 +42,6 @@ public class VoteRestController extends AbstractVoteController {
         return super.get(id);
     }
 
-    // Подумать, про @RequestParam(required = false) у date
     @Override
     @GetMapping
     public List<ResultsVoting> getResults(@RequestParam LocalDate date) {

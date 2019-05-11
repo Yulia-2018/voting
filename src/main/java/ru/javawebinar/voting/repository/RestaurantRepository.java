@@ -14,7 +14,5 @@ public interface RestaurantRepository {
 
     List<Restaurant> getAll();
 
-    default List<Restaurant> getAllWithDishes(LocalDate date){
-        throw new UnsupportedOperationException();
-    }
+    List<Restaurant> getAllWithDishes(LocalDate date);
 }

@@ -22,7 +22,6 @@ public class Vote extends AbstractBaseEntity {
     @NotNull(groups = View.Persist.class)
     private User user;
 
-    // Поставила EAGER для результатов голосования
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "restaurant_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -32,7 +31,6 @@ public class Vote extends AbstractBaseEntity {
     public Vote() {
     }
 
-    // Подумать, нужны ли во всех конструкторах user и restaurant
     public Vote(Vote v) {
         this(v.id, v.date, v.user, v.restaurant);
     }
@@ -43,15 +41,13 @@ public class Vote extends AbstractBaseEntity {
     }
 
     public Vote(Integer id, LocalDate date, Restaurant restaurant) {
-        super(id);
-        this.date = date;
+        this(id, date);
         this.restaurant = restaurant;
     }
 
     public Vote(Integer id, LocalDate date, User user, Restaurant restaurant) {
-        this(id, date);
+        this(id, date, restaurant);
         this.user = user;
-        this.restaurant = restaurant;
     }
 
     public LocalDate getDate() {

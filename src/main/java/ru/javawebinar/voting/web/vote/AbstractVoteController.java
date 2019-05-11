@@ -22,18 +22,12 @@ public abstract class AbstractVoteController {
     private VoteService service;
 
     public Vote create(Vote vote, int restaurantId) {
-        // При создании голоса мы скорее всего его будем формировать как то так:
-        // Vote vote = new Vote(null, LocalDate.now()), про user и restaurant на т.м. не знаю
-        // то есть в метод create голос мы передаем с текущей датой
         int userId = SecurityUtil.authUserId();
         checkNew(vote);
         log.info("user {} create {}", userId, vote);
         return service.create(vote, userId, restaurantId);
     }
 
-    // При редактировании голоса мы скорее всего его будем получать как то так:
-    // Vote vote = get(id, userId)
-    // то есть в метод update голос мы передаем неизвестно с какой датой, с текущей датой или с любой из предыдущих дат
     public void update(Vote vote, int id, int restaurantId) {
         int userId = SecurityUtil.authUserId();
         assureIdConsistent(vote, id);
