@@ -2,7 +2,6 @@ package ru.javawebinar.voting.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.voting.model.Dish;
 
 import java.time.LocalDate;
@@ -18,11 +17,7 @@ public class DishRepositoryImpl implements DishRepository {
     private CrudRestaurantRepository crudRestaurantRepository;
 
     @Override
-    @Transactional
     public Dish save(Dish dish, int restaurantId) {
-        if (!dish.isNew() && get(dish.getId(), restaurantId) == null) {
-            return null;
-        }
         dish.setRestaurant(crudRestaurantRepository.getOne(restaurantId));
         return crudDishRepository.save(dish);
     }

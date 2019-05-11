@@ -14,9 +14,14 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
 
+@NamedQueries({
+        @NamedQuery(name = User.BY_EMAIL, query = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles WHERE u.email=?1")
+})
 @Entity
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "email", name = "users_unique_email_idx")})
 public class User extends AbstractNamedEntity implements HasEmail {
+
+    public static final String BY_EMAIL = "User.getByEmail";
 
     @Column(name = "email", nullable = false, unique = true)
     @Email

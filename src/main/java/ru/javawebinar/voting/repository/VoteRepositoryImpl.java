@@ -2,7 +2,6 @@ package ru.javawebinar.voting.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.voting.model.Vote;
 
 import java.time.LocalDate;
@@ -21,11 +20,7 @@ public class VoteRepositoryImpl implements VoteRepository {
     private CrudRestaurantRepository crudRestaurantRepository;
 
     @Override
-    @Transactional
     public Vote save(Vote vote, int userId, int restaurantId) {
-        if (!vote.isNew() && get(vote.getId(), userId) == null) {
-            return null;
-        }
         vote.setUser(crudUserRepository.getOne(userId));
         vote.setRestaurant(crudRestaurantRepository.getOne(restaurantId));
         return crudVoteRepository.save(vote);
@@ -33,7 +28,7 @@ public class VoteRepositoryImpl implements VoteRepository {
 
     @Override
     public Vote get(int id, int userId) {
-        return crudVoteRepository.findById(id).filter(vote -> vote.getUser().getId() == userId).orElse(null);
+        return crudVoteRepository.get(id, userId);
     }
 
     @Override

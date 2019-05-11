@@ -65,7 +65,6 @@ class VoteServiceTest {
         if (LocalTime.now().compareTo(TIME) <= 0) {
             service.update(updated, USER_ID, RESTAURANT1_ID);
             Vote actual = service.get(VOTE_ID_FOR_CURRENT_DATE, USER_ID);
-            RestaurantTestData.assertMatch(actual.getRestaurant(), updated.getRestaurant());
             assertMatch(actual, updated);
         } else {
             InvalidDateTimeException e = assertThrows(InvalidDateTimeException.class, () -> service.update(updated, USER_ID, RESTAURANT1_ID));

@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface DishRepository {
-    // null if updated dish do not belong to restaurantId
+
     Dish save(Dish dish, int restaurantId);
 
     // false if dish do not belong to restaurantId

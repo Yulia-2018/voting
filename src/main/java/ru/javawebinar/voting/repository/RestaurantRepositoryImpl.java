@@ -16,8 +16,8 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
     private CrudRestaurantRepository crudRepository;
 
     @Override
-    public Restaurant save(Restaurant user) {
-        return crudRepository.save(user);
+    public Restaurant save(Restaurant restaurant) {
+        return crudRepository.save(restaurant);
     }
 
     @Override
